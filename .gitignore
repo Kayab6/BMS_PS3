@@ -2,4 +2,12 @@ __pycache__/
 *.py[cod]
 *.pyc
 *$py.class
+.env
+.env.*
+*.db
 /BMS_PS3/
+venv/
+.venv/
+ml/model.pkl
+ml/department_encoder.pkl
+

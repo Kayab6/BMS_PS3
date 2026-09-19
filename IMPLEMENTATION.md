@@ -1,262 +1,88 @@
-# MEDFLOW
+# MEDFLOW Implementation Notes
 
-## Implementation Guide
+## Member 3 contribution
 
-**Goal:** Working, deployed prototype within 8 hours.
+This prototype focuses on the operational backend integration layer and the demo-ready API: Flask, SQLite, simulation orchestration, ML prediction, and Hugging Face explanation with a safe fallback.
 
----
+### Included work
 
-# 1. Final Technology Stack
+- Flask application with API endpoints for patients, resources, queue, metrics, simulation, prediction, and explanation
+- SQLite database initialization with demo departments, resources, inventory, and patients
+- Integration with the existing scheduler and resource manager logic already created by the team
+- Simulation status endpoint and simple start flow
+- RandomForest-based waiting-time prediction trained on synthetic hospital data
+- Hugging Face explanation flow with rule-based fallback when no token or API call succeeds
+- Tests for the core backend behavior
 
-## Backend
+## Backend architecture
 
-* Python
-* Flask
-* SQLAlchemy
-* SQLite
-* REST APIs
-
-## Scheduling
-
-* Python `heapq`
-* Custom priority algorithm
-
-## Simulation
-
-* Python discrete-event simulation
-* Custom event queue
-
-## Optimization
-
-* Google OR-Tools
-
-## ML
-
-* Pandas
-* NumPy
-* Scikit-learn
-* RandomForestRegressor
-
-## AI
-
-* Hugging Face model/API
-
-## Frontend
-
-* HTML
-* CSS
-* JavaScript
-* Chart.js
-
-## Version Control
-
-* Git
-* GitHub
-
-## Deployment
-
-Deploy Flask application to a platform suitable for the team's account and hackathon environment.
-
----
-
-# 2. Architecture
+The app keeps the design intentionally simple:
 
 ```text
-                    FRONTEND
-              HTML + CSS + JS
-                     │
-                  REST API
-                     │
-                   FLASK
-                     │
-        ┌────────────┼────────────┐
-        ↓            ↓            ↓
-    Scheduler    Simulation     Metrics
-        │            │
-        ↓            ↓
- Resource Manager   Events
-        │
- ┌──────┼───────────────┐
- ↓      ↓       ↓       ↓
-Beds   Staff   Inventory Equipment
-        │
-        ↓
-     SQLite
-        │
- ┌──────┴─────────┐
- ↓                ↓
-ML Engine      HF Explainer
+POST /api/simulation/start
+    ↓
+Simulation engine
+    ↓
+Scheduler priority queue
+    ↓
+Resource manager
+    ↓
+SQLite database
+    ↓
+Operational metrics
+    ↓
+Frontend and API consumers
 ```
 
----
+## Data model
 
-# 3. Project Structure
+The backend uses SQLite with SQLAlchemy and a minimal set of tables:
 
-```text
-MEDFLOW/
-│
-├── app.py
-├── config.py
-├── requirements.txt
-├── README.md
-├── PRD.md
-├── IMPLEMENTATION.md
-│
-├── backend/
-│   ├── __init__.py
-│   ├── database.py
-│   │
-│   ├── models/
-│   │   ├── patient.py
-│   │   ├── resource.py
-│   │   ├── allocation.py
-│   │   ├── simulation.py
-│   │   ├── blood.py
-│   │   ├── medicine.py
-│   │   └── equipment.py
-│   │
-│   └── routes/
-│       ├── patients.py
-│       ├── resources.py
-│       ├── simulation.py
-│       ├── metrics.py
-│       └── scenarios.py
-│
-├── scheduling/
-│   ├── priority.py
-│   ├── priority_queue.py
-│   ├── scheduler.py
-│   └── strategies.py
-│
-├── simulation/
-│   ├── engine.py
-│   ├── events.py
-│   └── generator.py
-│
-├── optimization/
-│   ├── model.py
-│   ├── constraints.py
-│   └── solver.py
-│
-├── resources/
-│   ├── manager.py
-│   ├── hospital.py
-│   ├── blood_bank.py
-│   ├── medicine_inventory.py
-│   └── equipment_inventory.py
-│
-├── ml/
-│   ├── features.py
-│   ├── train.py
-│   ├── predict.py
-│   └── model.pkl
-│
-├── ai/
-│   └── explainer.py
-│
-├── metrics/
-│   └── calculator.py
-│
-├── templates/
-│   └── index.html
-│
-├── static/
-│   ├── css/
-│   │   └── style.css
-│   └── js/
-│       ├── dashboard.js
-│       ├── simulation.js
-│       └── charts.js
-│
-└── tests/
-    ├── test_scheduler.py
-    ├── test_resources.py
-    ├── test_simulation.py
-    └── test_metrics.py
-```
+- patients
+- resources
+- departments
+- allocations
+- blood_inventory
+- medicine_inventory
+- equipment_inventory
+- simulation_runs
+- events
 
----
+The seed data includes realistic demo departments and small hospital resource counts so the app can be launched immediately on a clean machine.
 
-# 4. Database
+## Scheduler and resource integration
 
-SQLite is the application's source of truth.
+The application reuses the existing project logic from the scheduling and resource modules instead of inventing a second scheduler. The Flask API uses the same priority calculation and resource availability checks to make the prototype cohesive and demo-friendly.
 
-No real hospital database is required.
+## ML prediction
 
-The application creates:
+The ML layer is intentionally lightweight:
 
-```text
-medflow.db
-```
+- synthetic dataset generated in `ml/dataset.csv`
+- RandomForestRegressor trained in `ml/train.py`
+- prediction function exposed via `ml/predict.py`
+- API route `POST /api/ml/predict-wait`
 
-Tables:
+The model predicts a non-negative waiting-time value for a given patient and operational conditions.
 
-```text
-patients
-resources
-allocations
-departments
-blood_inventory
-medicine_inventory
-equipment_inventory
-simulation_runs
-events
-```
+## Hugging Face explanation
 
----
+The AI layer is built around a minimal operational prompt that only explains queue pressure, bottlenecks, staffing constraints, waiting time, and inventory. It does not diagnose patients or recommend treatment.
 
-# 5. Patient Table
+If the environment variables are missing or the API fails, the code automatically uses a rule-based explanation instead of crashing the application.
 
-```text
-Patient
--------
-id
-arrival_time
-department
-urgency
-treatment_duration
-waiting_time
-priority_score
-status
-required_bed_type
-doctor_required
-nurses_required
-or_required
-ambulance_required
-```
+## Testing performed
 
-Medicine/equipment/blood requirements can initially be stored in a simple JSON field if implementation speed becomes a problem.
+The project was verified with:
 
----
+- `python -m pytest tests/test_api.py -q`
+- `python ml/train.py`
+- direct calls to the ML prediction function
+- live start-up of the Flask server and endpoint checks using HTTP requests
 
-# 6. Resource Manager
+## Demo-ready summary
 
-Create a central resource manager.
-
-Example interface:
-
-```python
-allocate_resource(patient, resource_type)
-release_resource(resource_type)
-is_available(resource_type)
-get_available(resource_type)
-```
-
-Never allow individual scheduling modules to directly modify resource counts.
-
-All resource changes should pass through `ResourceManager`.
-
-This prevents inconsistent resource states.
-
----
-
-# 7. Priority Engine
-
-File:
-
-```text
-scheduling/priority.py
-```
+This Member 3 work is intentionally small, stable, and readable. It demonstrates the end-to-end flow needed for the hackathon: patient data, scheduling, simulation, metrics, ML prediction, and AI explanation without unnecessary complexity.
 
 Implement:
 

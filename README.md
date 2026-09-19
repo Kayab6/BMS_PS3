@@ -1,261 +1,117 @@
 # MEDFLOW
 
-## Prioritize Patients. Optimize Resources.
+MEDFLOW is a lightweight hospital operations simulation and demo backend built for a hackathon prototype. It combines a Flask API, SQLite database, queue scheduler, resource manager, simulation loop, ML waiting-time predictor, and a Hugging Face-powered operational explainer with a safe rule-based fallback.
 
-MEDFLOW is a hospital resource management simulator designed to simulate patient flow and intelligently allocate constrained hospital resources.
-
-The system combines:
-
-* Priority-based scheduling
-* Discrete-event simulation
-* Resource allocation
-* Inventory management
-* Optimization
-* Machine learning
-* Hugging Face AI explanations
-* Interactive operational dashboard
-
----
-
-# Problem
-
-Hospitals operate with limited resources while patients arrive continuously with different urgency levels and resource requirements.
-
-MEDFLOW simulates this environment and attempts to reduce waiting time while respecting resource and inventory constraints.
-
----
-
-# Key Features
-
-## Patient Management
-
-* Simulated patient arrivals
-* Urgency levels
-* Department classification
-* Treatment duration
-* Dynamic patient queue
-* Waiting-time tracking
-
-## Resource Management
-
-* General beds
-* ICU beds
-* Doctors
-* Nurses
-* Operating rooms
-* Ambulances
-
-## Inventory
-
-* Blood bank
-* Medicines
-* Medical equipment
-* Consumable equipment
-
-## Scheduling
-
-* FCFS
-* Urgency-only
-* MEDFLOW hybrid scheduling
-
-## Simulation
-
-* Normal operation
-* Emergency patient surge
-* Staff shortages
-* Resource failures
-* Inventory shortages
-
-## Analytics
-
-* Average waiting time
-* Maximum waiting time
-* Resource utilization
-* Queue length
-* Throughput
-* Bottleneck detection
-* Strategy comparison
-
-## Machine Learning
-
-Predicts patient waiting time using operational features.
-
-## Hugging Face AI
-
-Generates natural-language operational explanations from structured hospital metrics.
-
-The AI layer does not make clinical decisions.
-
----
-
-# Architecture
+## Architecture
 
 ```text
-HTML/CSS/JavaScript
-        │
-        ↓
-      Flask
-        │
- ┌──────┼──────────┐
- ↓      ↓          ↓
-Queue Simulation Metrics
- │       │
- └───────┼─────────┘
-         ↓
- Resource Manager
-         │
- ┌───────┼───────────────┐
- ↓       ↓       ↓       ↓
-Beds   Staff   Inventory Equipment
-         │
-         ↓
-       SQLite
-         │
-    ┌────┴────┐
-    ↓         ↓
-   ML     Hugging Face
+Frontend / dashboard
+   ↓
+Flask API
+   ↓
+Scheduler + Priority Engine
+   ↓
+Resource Manager
+   ↓
+Simulation Engine
+   ↓
+SQLite database
+   ↓
+Metrics / queue / patient state
+   ↓
+ML waiting-time prediction
+   ↓
+AI operational explanation
+   ↓
+Fallback explanation
 ```
 
----
-
-# Technology Stack
-
-| Component       | Technology                      |
-| --------------- | ------------------------------- |
-| Backend         | Python + Flask                  |
-| Database        | SQLite                          |
-| ORM             | SQLAlchemy                      |
-| Scheduling      | Python heapq                    |
-| Optimization    | Google OR-Tools                 |
-| Simulation      | Custom discrete-event simulator |
-| ML              | Scikit-learn                    |
-| AI              | Hugging Face                    |
-| Frontend        | HTML/CSS/JavaScript             |
-| Charts          | Chart.js                        |
-| Version Control | Git/GitHub                      |
-
----
-
-# Installation
-
-Clone the repository:
-
-```bash
-git clone <repository-url>
-cd MEDFLOW
-```
-
-Create a virtual environment:
+## Install
 
 ```bash
 python -m venv venv
-```
-
-Activate it.
-
-Windows:
-
-```bash
 venv\Scripts\activate
-```
-
-Linux/macOS:
-
-```bash
-source venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
 pip install -r requirements.txt
 ```
 
----
+## Initialize database
 
-# Environment Variables
-
-Create:
-
-```text
-.env
-```
-
-Example:
-
-```text
-SECRET_KEY=your-secret-key
-HF_TOKEN=your-huggingface-token
-```
-
-Never commit `.env`.
-
-Add it to:
-
-```text
-.gitignore
-```
-
----
-
-# Run
+The app initializes its SQLite tables and sample data automatically on first launch.
 
 ```bash
 python app.py
 ```
 
-Open:
+## Run the Flask app
+
+```bash
+python app.py
+```
+
+Then open:
 
 ```text
 http://127.0.0.1:5000
 ```
 
----
+## Train the ML model
 
-# Simulation Flow
-
-```text
-Patient Arrival
-      ↓
-Department + Urgency
-      ↓
-Priority Calculation
-      ↓
-Priority Queue
-      ↓
-Resource Check
-      ↓
-Inventory Check
-      ↓
-Allocation
-      ↓
-Treatment
-      ↓
-Resource Release
-      ↓
-Metrics
-      ↓
-Dashboard
-      ↓
-ML Prediction
-      ↓
-AI Operational Explanation
+```bash
+python ml/train.py
 ```
 
----
-
-# Priority Calculation
-
-MEDFLOW considers:
+This creates:
 
 ```text
-Urgency
-Waiting Time
-Department Priority
-Resource Feasibility
+ml/dataset.csv
+ml/model.pkl
+ml/department_encoder.pkl
+```
+
+## Hugging Face configuration
+
+Create a `.env` file from `.env.example` and fill in your tokens if you want to use Hugging Face:
+
+```bash
+copy .env.example .env
 ```
 
 Example:
+
+```env
+HF_TOKEN=
+HF_MODEL=
+```
+
+If the token is missing or the API fails, the app automatically falls back to a rule-based explanation so the dashboard keeps working.
+
+## API endpoints
+
+- `GET /api/health`
+- `GET /api/patients`
+- `GET /api/resources`
+- `GET /api/queue`
+- `GET /api/metrics`
+- `POST /api/simulation/start`
+- `GET /api/simulation/status`
+- `POST /api/ml/predict-wait`
+- `POST /api/ai/explain`
+
+## Example requests
+
+```bash
+curl http://127.0.0.1:5000/api/health
+curl http://127.0.0.1:5000/api/patients
+curl http://127.0.0.1:5000/api/metrics
+curl -X POST http://127.0.0.1:5000/api/ml/predict-wait -H "Content-Type: application/json" -d "{\"urgency\":4,\"queue_length\":10,\"icu_availability\":2,\"bed_availability\":4,\"doctor_availability\":3,\"nurse_availability\":5,\"treatment_duration\":30,\"department\":\"Emergency\"}"
+curl -X POST http://127.0.0.1:5000/api/ai/explain -H "Content-Type: application/json" -d "{\"waiting_patients\":18,\"average_waiting_time\":42,\"beds_available\":3,\"doctors_available\":2,\"nurses_available\":4,\"icu_available\":1,\"blood_units\":8,\"medicine_stock\":64,\"highest_queue_department\":\"Emergency\"}"
+```
+
+## Notes
+
+- The prototype intentionally keeps the logic readable and easy to demo.
+- The app avoids overengineering and reuses the existing scheduling, resource, and simulation modules rather than creating duplicate systems.
+- The AI layer is operational only: it explains queue pressure and resource bottlenecks without making clinical decisions.
 
 ```text
 Priority =

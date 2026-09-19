@@ -1,0 +1,1201 @@
+urgency,queue_length,icu_availability,bed_availability,doctor_availability,nurse_availability,treatment_duration,department,actual_waiting_time
+4,12,2,4,7,2,130,Emergency,54
+5,13,3,7,6,7,36,Neurology,44
+2,4,4,8,5,6,150,Neurology,14
+2,3,2,8,1,10,151,Cardiology,19
+4,13,1,1,7,6,162,Emergency,79
+1,7,2,5,1,7,40,General Medicine,35
+4,7,4,4,3,11,76,Gynecology,41
+1,9,0,7,4,5,52,General Medicine,44
+3,4,4,6,5,2,66,Gynecology,18
+5,15,1,9,3,4,127,Cardiology,59
+1,14,0,8,6,9,124,General Medicine,39
+4,10,2,5,4,2,38,ICU,59
+4,12,2,8,4,2,141,Cardiology,46
+3,3,2,8,3,8,20,Neurology,21
+2,6,2,9,6,2,53,Gynecology,17
+2,16,1,4,5,3,106,Gynecology,63
+4,8,2,4,6,5,42,Gynecology,47
+1,14,3,7,4,9,41,Emergency,44
+1,9,3,5,4,3,77,Gynecology,29
+4,11,1,9,1,5,34,General Medicine,40
+5,9,3,5,2,9,174,Cardiology,45
+4,14,2,7,2,2,30,ICU,50
+3,13,1,7,3,10,110,Emergency,56
+5,2,3,5,6,8,86,Cardiology,34
+3,3,3,6,1,9,83,Emergency,34
+3,5,1,6,2,8,32,ICU,31
+1,6,4,9,5,6,72,General Medicine,12
+1,4,4,4,4,6,144,ICU,25
+3,12,2,4,7,3,109,ICU,41
+2,17,1,5,4,10,87,General Medicine,61
+5,2,4,5,1,5,106,Cardiology,18
+4,3,1,3,5,9,134,Neurology,48
+1,11,4,9,2,4,21,ICU,14
+2,6,4,5,6,11,67,Neurology,30
+2,11,2,9,2,11,169,Neurology,35
+1,6,2,9,7,3,162,Neurology,28
+5,5,4,2,4,6,67,Gynecology,45
+4,8,1,8,1,9,138,Cardiology,44
+5,17,1,1,1,2,152,Emergency,92
+1,7,2,7,7,2,47,General Medicine,21
+4,7,4,5,4,6,38,Gynecology,37
+2,6,0,1,5,11,35,ICU,56
+4,14,2,4,2,10,147,Gynecology,67
+4,15,0,4,1,7,168,Emergency,79
+2,4,2,5,5,5,172,Gynecology,30
+5,9,0,6,4,3,119,Gynecology,53
+1,13,2,1,7,3,113,General Medicine,51
+5,8,2,6,6,10,17,General Medicine,55
+5,6,3,5,2,5,102,ICU,35
+5,14,3,3,3,3,76,Gynecology,70
+4,17,4,3,4,7,55,Emergency,61
+4,15,4,9,1,10,25,Gynecology,36
+1,5,4,3,3,11,38,Cardiology,29
+1,4,1,6,2,6,34,Neurology,27
+1,5,0,8,1,6,112,General Medicine,36
+2,15,1,9,4,9,159,General Medicine,41
+1,9,0,9,2,4,56,Neurology,44
+3,6,0,1,3,11,101,Gynecology,54
+5,3,0,4,7,8,31,Emergency,67
+5,5,4,3,6,7,143,General Medicine,41
+4,13,0,8,4,5,99,Neurology,66
+3,14,1,7,5,4,58,Gynecology,51
+3,4,2,6,2,5,75,Cardiology,37
+2,8,1,2,5,4,63,General Medicine,60
+5,15,2,7,3,6,103,General Medicine,69
+4,5,4,5,4,9,119,Cardiology,26
+4,2,1,6,5,7,157,ICU,37
+4,12,0,6,6,7,28,Gynecology,52
+1,17,4,2,6,6,112,General Medicine,55
+4,16,4,1,2,9,112,Gynecology,60
+4,4,0,2,4,2,109,Neurology,44
+3,13,3,9,6,7,96,General Medicine,23
+5,15,0,8,1,9,29,Emergency,76
+3,16,3,2,5,9,70,General Medicine,64
+4,12,1,8,3,7,66,General Medicine,50
+1,3,4,5,4,9,78,Gynecology,23
+3,17,4,4,6,8,94,ICU,54
+5,2,3,8,7,6,34,Neurology,38
+4,3,0,5,5,2,128,Gynecology,47
+3,13,4,4,3,11,90,Emergency,49
+2,10,4,7,6,7,33,Emergency,21
+5,12,1,8,6,2,32,Emergency,63
+1,12,4,8,1,4,54,Neurology,22
+4,14,0,1,7,4,123,Gynecology,79
+1,4,0,8,5,11,147,Emergency,27
+5,5,0,7,6,11,168,ICU,50
+4,15,4,5,1,6,48,Gynecology,59
+4,3,4,5,2,10,136,Neurology,21
+2,3,3,5,7,9,115,Emergency,34
+4,2,0,2,7,6,132,Emergency,67
+1,14,0,4,7,7,90,Cardiology,62
+4,15,2,5,2,4,171,ICU,58
+3,10,3,3,5,6,170,Cardiology,50
+3,13,2,9,4,3,34,Cardiology,41
+2,3,1,6,3,9,115,Gynecology,30
+3,4,2,8,2,11,112,Gynecology,19
+1,6,2,5,4,3,52,Gynecology,25
+3,11,3,5,5,7,122,Cardiology,47
+4,7,2,2,4,7,118,ICU,69
+3,14,3,6,7,3,166,Gynecology,46
+3,6,3,3,3,7,153,General Medicine,43
+5,15,0,1,2,7,70,Gynecology,85
+2,3,3,9,1,6,151,General Medicine,3
+2,13,0,3,5,8,34,Cardiology,47
+5,3,4,5,6,6,66,Neurology,33
+4,14,1,9,5,5,16,Emergency,64
+3,9,0,7,2,6,152,General Medicine,58
+3,5,4,8,7,8,38,Gynecology,26
+2,7,0,8,6,2,86,Gynecology,47
+1,6,0,3,7,11,22,Gynecology,37
+2,5,2,9,5,9,96,ICU,16
+2,15,4,8,5,7,122,ICU,32
+4,11,0,7,3,9,104,General Medicine,60
+5,7,2,5,6,8,155,Gynecology,48
+5,6,2,2,6,5,71,Cardiology,50
+2,17,4,6,5,5,44,Emergency,57
+1,6,0,6,7,8,88,ICU,39
+3,11,0,4,2,3,131,Emergency,71
+5,14,3,8,4,11,140,General Medicine,51
+4,6,4,6,6,6,158,Neurology,34
+4,14,2,6,4,11,122,Neurology,65
+5,4,1,8,6,11,138,Emergency,44
+1,6,0,5,6,11,95,Emergency,53
+3,7,4,3,3,2,145,Gynecology,44
+3,10,4,3,7,6,150,ICU,45
+2,17,0,4,1,11,126,Emergency,69
+4,2,4,7,6,5,147,Neurology,20
+2,3,3,3,7,6,15,Gynecology,31
+4,10,0,7,3,8,162,ICU,63
+2,8,4,5,3,9,155,ICU,26
+3,9,1,2,2,7,161,General Medicine,52
+1,12,1,5,6,6,148,General Medicine,60
+2,14,2,5,1,3,109,Neurology,40
+2,9,4,2,4,5,37,Emergency,58
+1,7,1,5,1,5,89,Emergency,47
+2,9,2,8,7,11,139,Gynecology,26
+2,7,4,4,2,7,68,Gynecology,32
+3,17,3,2,5,8,122,ICU,60
+2,6,1,2,2,5,159,Gynecology,51
+3,6,3,6,6,8,87,Emergency,42
+5,11,3,3,6,8,163,Gynecology,55
+1,4,2,3,1,6,122,Cardiology,30
+3,16,2,2,1,11,173,General Medicine,63
+1,2,1,6,1,11,90,ICU,23
+2,2,0,8,1,8,78,General Medicine,34
+4,9,1,9,3,6,80,Gynecology,45
+1,6,0,4,7,3,15,Emergency,50
+3,2,1,4,4,7,143,ICU,32
+2,5,1,6,2,11,94,Neurology,29
+2,13,1,3,7,6,23,Cardiology,53
+4,5,0,6,1,5,37,Gynecology,49
+1,16,0,8,1,3,33,Emergency,46
+2,3,2,3,5,8,155,Cardiology,35
+5,10,3,5,2,10,142,ICU,44
+2,5,4,6,4,11,114,ICU,30
+2,13,4,2,3,7,146,Emergency,58
+2,10,2,6,3,10,27,ICU,42
+2,8,0,7,2,8,134,General Medicine,53
+4,15,1,2,7,3,112,ICU,75
+1,12,3,1,2,9,98,General Medicine,42
+1,16,0,5,7,7,111,ICU,61
+5,3,4,4,4,3,117,Neurology,33
+1,9,2,2,3,5,124,General Medicine,35
+1,2,2,2,2,10,159,ICU,32
+4,4,2,5,3,9,126,Neurology,46
+3,6,3,7,7,3,84,General Medicine,29
+1,2,3,4,4,6,82,Gynecology,17
+5,12,1,2,5,6,39,General Medicine,66
+1,12,0,9,7,11,165,ICU,34
+3,16,3,6,7,8,77,Cardiology,50
+4,12,3,5,6,11,109,Emergency,51
+5,13,4,8,6,7,31,General Medicine,50
+4,9,0,2,7,11,77,Cardiology,78
+5,12,1,6,3,5,115,Gynecology,66
+3,2,3,6,7,7,92,Cardiology,28
+2,7,1,7,1,5,41,Cardiology,38
+2,2,4,7,2,3,31,Emergency,18
+5,7,1,5,2,11,45,Neurology,51
+3,9,1,2,1,2,94,Emergency,71
+4,12,2,8,1,4,56,ICU,44
+4,6,4,7,7,3,177,ICU,20
+5,11,0,4,1,11,65,Cardiology,67
+1,15,4,7,5,6,104,Cardiology,30
+2,9,0,1,6,5,111,Emergency,65
+2,15,1,8,3,3,140,General Medicine,48
+2,11,4,4,1,4,162,Emergency,38
+2,4,4,6,2,8,83,Cardiology,21
+2,16,3,2,6,7,159,ICU,53
+3,13,1,3,2,4,41,Neurology,58
+5,2,3,3,4,4,95,Emergency,46
+3,15,2,4,1,5,35,Cardiology,62
+3,15,4,2,2,5,106,Emergency,57
+2,15,0,4,1,3,166,Emergency,79
+4,3,2,9,3,7,102,Gynecology,27
+5,4,4,8,6,5,92,Gynecology,26
+5,12,1,6,1,11,71,General Medicine,58
+4,2,3,6,6,10,49,Neurology,27
+3,6,3,7,1,7,178,Neurology,26
+1,8,2,8,1,6,40,Gynecology,25
+2,4,4,6,3,6,134,Cardiology,24
+4,12,2,1,4,8,171,ICU,57
+1,3,3,9,6,7,21,Neurology,0
+5,13,3,3,7,6,102,ICU,59
+2,7,4,7,3,9,136,ICU,20
+3,4,3,6,4,9,164,Gynecology,31
+4,8,1,7,3,6,87,ICU,46
+1,7,3,2,5,9,124,General Medicine,39
+2,14,0,2,6,11,157,Gynecology,63
+4,4,0,8,2,9,37,Gynecology,43
+4,16,4,7,2,11,104,ICU,34
+5,11,3,7,2,5,118,General Medicine,52
+5,10,1,4,5,7,18,General Medicine,59
+5,17,3,4,4,3,169,General Medicine,71
+2,15,2,7,4,6,119,ICU,42
+2,8,4,9,7,5,154,General Medicine,19
+4,17,3,3,6,3,94,Emergency,65
+2,11,3,6,3,5,57,General Medicine,39
+3,6,1,6,6,4,156,Cardiology,37
+1,2,1,5,6,3,153,Cardiology,27
+4,11,0,2,3,6,179,General Medicine,66
+1,2,2,4,5,10,168,Gynecology,34
+1,17,0,6,6,4,59,Neurology,60
+4,9,0,7,6,7,44,ICU,51
+3,5,2,3,5,9,122,Neurology,39
+5,2,2,1,1,8,135,Emergency,64
+2,6,2,2,3,4,23,ICU,47
+2,7,3,7,6,11,150,General Medicine,33
+2,5,3,7,6,3,96,Cardiology,20
+1,11,4,9,1,5,40,ICU,21
+1,10,0,3,1,2,86,ICU,53
+1,7,3,7,6,5,42,Emergency,28
+5,6,4,5,4,6,150,Emergency,53
+2,10,3,6,2,5,139,Cardiology,34
+4,13,2,3,3,6,51,Neurology,59
+4,17,0,7,1,5,44,Neurology,75
+5,2,1,7,7,10,37,Emergency,42
+3,16,1,2,7,11,175,ICU,58
+1,11,1,5,5,11,62,Cardiology,36
+3,13,2,4,6,5,132,Emergency,61
+1,16,3,4,4,8,57,Neurology,43
+4,3,4,4,4,3,78,ICU,32
+3,4,1,5,4,8,126,Emergency,51
+1,2,1,6,7,9,121,Cardiology,28
+5,3,2,8,4,10,169,Gynecology,36
+2,9,2,5,2,5,127,Cardiology,49
+1,8,1,1,3,7,44,Gynecology,51
+5,4,1,4,3,4,24,Neurology,64
+2,16,3,4,2,10,161,Cardiology,48
+1,14,0,1,1,6,117,General Medicine,61
+5,17,3,1,6,8,101,ICU,80
+1,5,2,1,3,6,171,Cardiology,44
+5,16,0,8,7,5,97,Gynecology,68
+2,14,2,5,1,8,67,General Medicine,54
+1,14,4,1,5,7,74,Gynecology,45
+3,14,3,4,7,10,168,Cardiology,51
+2,6,2,9,4,5,91,General Medicine,24
+3,7,1,9,3,2,77,Cardiology,44
+1,10,3,9,3,10,50,ICU,19
+4,10,1,5,6,11,168,General Medicine,59
+4,17,0,6,7,10,79,Emergency,82
+3,17,0,6,1,11,127,Gynecology,70
+1,7,3,2,6,4,96,Emergency,49
+1,11,3,9,3,10,159,Cardiology,36
+3,2,1,7,2,6,142,Gynecology,17
+3,5,4,1,7,9,156,ICU,32
+3,17,4,6,3,3,31,Gynecology,51
+3,5,2,6,7,9,115,Neurology,41
+2,4,2,2,1,10,146,Gynecology,35
+2,13,1,7,7,2,18,Emergency,58
+3,8,3,6,2,8,125,Neurology,34
+4,4,0,6,4,11,101,General Medicine,36
+1,11,0,5,3,3,30,Cardiology,56
+3,5,4,4,7,4,28,ICU,33
+5,16,3,4,4,3,86,Gynecology,67
+3,7,4,5,7,8,21,ICU,26
+2,10,4,4,1,5,169,Neurology,28
+1,6,0,1,6,11,40,Gynecology,50
+5,15,2,7,3,9,88,Emergency,72
+5,6,1,8,2,7,62,ICU,36
+1,12,4,2,5,7,151,ICU,46
+5,7,4,6,1,11,146,Neurology,39
+3,17,4,2,7,6,131,Cardiology,42
+3,15,1,3,3,3,79,Cardiology,75
+1,11,3,7,4,3,168,General Medicine,38
+1,7,0,8,2,4,175,Emergency,45
+3,12,4,8,7,2,53,Cardiology,30
+1,16,0,2,2,3,108,Cardiology,71
+3,12,3,8,2,7,147,ICU,50
+5,11,4,2,3,3,29,Neurology,69
+3,11,4,8,3,5,142,Cardiology,28
+1,11,1,2,5,3,126,Cardiology,59
+2,14,3,9,2,9,169,General Medicine,28
+1,11,2,5,4,2,98,General Medicine,38
+5,3,2,5,4,11,84,ICU,43
+3,5,1,7,5,8,23,General Medicine,49
+3,9,4,3,4,9,24,Emergency,52
+4,13,3,9,3,6,120,General Medicine,53
+4,6,1,4,5,9,125,General Medicine,46
+2,11,2,6,6,5,98,General Medicine,34
+3,10,1,6,6,5,36,Cardiology,55
+4,3,3,3,7,9,59,Cardiology,50
+5,14,0,3,2,5,63,Emergency,90
+5,13,3,2,5,10,43,ICU,70
+3,14,0,4,2,4,65,General Medicine,67
+3,15,3,2,1,6,94,General Medicine,62
+4,3,4,2,4,6,150,Neurology,32
+2,4,0,3,4,5,79,Cardiology,34
+4,4,1,2,2,5,36,Gynecology,56
+2,15,1,9,2,7,140,General Medicine,41
+3,12,3,1,7,8,179,Cardiology,41
+5,15,4,5,6,5,91,Cardiology,62
+1,11,2,5,4,6,82,General Medicine,42
+3,12,4,9,1,9,52,General Medicine,33
+5,14,4,7,7,3,161,Emergency,60
+3,13,1,8,5,8,169,Emergency,46
+3,11,1,2,2,4,47,Gynecology,58
+5,14,2,1,6,2,127,Neurology,70
+1,5,4,9,2,11,165,General Medicine,7
+4,17,4,4,2,11,60,ICU,51
+2,2,2,9,4,8,56,Neurology,13
+4,11,1,7,6,10,50,Neurology,52
+3,7,4,8,1,4,49,Neurology,21
+5,14,0,2,3,5,138,General Medicine,67
+1,4,0,6,3,6,94,ICU,25
+4,13,3,2,7,3,82,Neurology,62
+5,3,1,9,6,2,139,ICU,40
+3,4,1,2,2,6,91,Cardiology,52
+4,5,4,5,6,8,58,ICU,29
+2,6,0,1,7,7,81,Emergency,82
+5,12,1,3,1,2,41,Cardiology,70
+4,4,1,4,7,8,155,Cardiology,32
+2,10,0,8,7,7,65,Emergency,47
+4,11,0,2,6,3,169,Neurology,61
+3,2,4,2,4,11,137,Gynecology,33
+4,11,1,4,1,11,54,Emergency,69
+3,10,2,8,3,10,144,General Medicine,34
+2,14,3,3,5,4,101,General Medicine,42
+4,9,4,1,6,10,166,Cardiology,65
+2,7,3,6,4,2,177,Cardiology,24
+3,11,4,1,2,7,144,Neurology,50
+5,9,4,8,3,4,142,Neurology,24
+4,6,3,9,6,11,19,ICU,16
+4,7,2,6,4,6,24,Gynecology,45
+5,14,0,8,3,6,170,General Medicine,60
+4,10,1,5,7,4,138,Cardiology,57
+2,10,2,4,6,9,55,ICU,35
+1,7,4,4,5,3,119,Cardiology,12
+3,3,2,2,4,2,120,Gynecology,48
+5,15,4,1,3,11,110,Emergency,74
+5,4,4,7,7,10,69,ICU,30
+2,4,0,2,1,5,26,ICU,61
+1,2,0,5,6,9,110,Emergency,41
+4,8,4,3,5,6,101,Emergency,42
+3,13,1,2,4,2,43,Cardiology,62
+2,8,0,7,2,9,153,General Medicine,35
+4,12,4,8,1,10,141,Gynecology,33
+2,9,3,6,7,3,63,General Medicine,29
+2,7,2,3,5,6,115,ICU,36
+1,7,3,6,5,7,127,Gynecology,18
+3,2,2,4,1,11,51,General Medicine,28
+4,14,1,8,6,6,105,General Medicine,55
+3,10,2,1,5,9,168,Gynecology,50
+3,12,3,9,6,3,26,Gynecology,34
+3,10,4,4,4,7,92,General Medicine,46
+3,11,0,4,2,3,30,Neurology,61
+3,7,3,5,6,9,20,Neurology,34
+1,3,4,9,2,6,118,Gynecology,5
+4,6,2,3,6,3,53,Cardiology,51
+3,4,3,5,6,5,179,Gynecology,18
+2,7,1,7,2,8,111,General Medicine,39
+5,3,2,4,5,9,156,Emergency,56
+2,8,2,7,6,4,65,ICU,38
+5,9,4,9,7,7,146,ICU,31
+2,12,2,1,4,3,98,Emergency,68
+3,12,3,8,3,6,69,Cardiology,37
+1,10,4,9,4,2,52,Cardiology,17
+3,4,0,9,3,3,44,Gynecology,34
+2,12,0,1,1,11,110,Gynecology,67
+5,3,0,5,5,4,88,Emergency,52
+1,9,4,6,7,3,16,Cardiology,22
+5,7,2,7,2,10,48,Neurology,39
+4,5,2,9,7,10,96,Emergency,41
+3,14,1,7,2,9,22,Gynecology,62
+4,7,0,3,4,7,121,Cardiology,54
+4,10,4,2,5,2,31,Neurology,45
+4,13,1,2,1,10,51,Neurology,61
+3,3,0,2,6,7,167,Emergency,66
+5,10,0,3,7,7,172,Neurology,71
+4,13,4,2,7,4,175,Gynecology,59
+1,3,4,1,5,11,116,General Medicine,23
+3,10,0,6,6,9,27,Neurology,60
+5,10,2,7,4,7,66,ICU,45
+4,2,1,9,2,5,51,Emergency,33
+5,10,3,1,2,11,156,Neurology,61
+5,14,1,6,5,6,167,ICU,65
+4,12,4,5,2,6,29,Emergency,48
+2,6,0,4,4,9,139,Gynecology,49
+2,2,4,7,4,5,154,Neurology,16
+5,6,3,2,1,5,161,General Medicine,47
+1,6,0,2,5,3,22,ICU,51
+1,5,2,7,3,7,101,Cardiology,21
+1,12,3,3,3,5,122,Cardiology,32
+1,9,1,4,4,5,80,Cardiology,41
+2,15,2,2,5,3,18,Emergency,71
+2,15,2,7,1,2,144,General Medicine,50
+1,17,3,3,6,11,61,ICU,55
+4,6,4,9,7,9,21,Neurology,17
+3,10,0,8,3,2,177,Gynecology,47
+3,3,4,5,3,2,94,Emergency,41
+3,2,0,2,1,9,170,ICU,50
+3,2,0,5,3,2,168,General Medicine,41
+5,17,1,8,4,9,156,Gynecology,56
+2,8,4,8,3,5,102,Emergency,35
+1,13,1,2,1,6,79,ICU,63
+4,9,0,5,5,5,58,General Medicine,64
+2,6,3,5,4,8,74,Cardiology,24
+3,6,1,1,7,6,71,Emergency,68
+3,10,0,9,2,8,138,Neurology,45
+5,16,4,3,5,3,132,ICU,56
+5,9,1,5,2,3,100,General Medicine,56
+1,9,3,4,1,2,168,General Medicine,33
+1,17,0,7,2,5,60,ICU,57
+1,16,1,4,3,11,70,ICU,53
+1,11,0,3,2,4,139,ICU,63
+5,2,2,8,4,11,66,Cardiology,32
+4,13,4,5,7,3,86,Emergency,55
+5,14,1,1,7,6,30,General Medicine,89
+4,2,0,3,5,3,20,Cardiology,49
+4,14,3,5,6,5,31,General Medicine,55
+3,15,0,6,4,6,58,Gynecology,66
+3,2,4,2,2,10,162,Gynecology,34
+2,13,2,1,3,6,57,General Medicine,60
+1,14,1,6,4,7,83,Emergency,63
+2,12,4,1,6,6,174,Gynecology,44
+1,16,2,6,2,4,150,Emergency,63
+2,4,4,9,1,5,108,ICU,4
+1,7,2,2,6,2,26,ICU,42
+2,3,3,4,1,5,169,ICU,28
+1,6,1,2,5,5,133,ICU,40
+1,13,0,7,7,9,90,Cardiology,56
+3,14,4,9,1,10,33,ICU,22
+5,7,1,3,3,8,89,Neurology,58
+1,10,4,8,2,6,131,ICU,23
+1,3,3,1,3,7,123,Neurology,20
+5,16,3,4,7,6,37,General Medicine,62
+2,15,2,5,3,10,25,Gynecology,47
+2,12,1,2,2,8,58,Neurology,61
+2,5,1,7,4,11,142,ICU,32
+3,6,4,3,4,3,165,ICU,37
+1,13,2,9,5,7,177,Cardiology,40
+1,9,2,1,1,9,139,Emergency,56
+4,15,4,6,5,11,116,Emergency,56
+5,10,4,1,1,2,106,Neurology,60
+5,14,3,5,3,2,46,Emergency,58
+4,6,1,7,1,6,161,General Medicine,41
+1,6,1,2,7,3,131,Emergency,44
+2,11,1,7,1,2,135,ICU,39
+1,17,3,9,7,5,139,Gynecology,40
+3,15,2,1,3,9,101,ICU,70
+3,12,4,6,7,10,27,ICU,38
+1,14,1,2,3,4,43,Emergency,67
+3,11,4,8,1,11,26,General Medicine,33
+1,6,1,4,7,5,49,General Medicine,50
+3,8,2,8,5,3,77,Emergency,48
+1,13,2,1,5,4,158,ICU,70
+3,12,0,3,2,8,26,Neurology,74
+2,2,3,1,1,11,157,Gynecology,29
+1,6,0,8,1,7,155,Emergency,23
+3,14,2,3,6,10,95,Cardiology,61
+5,8,0,6,6,11,23,Gynecology,66
+5,3,3,9,5,9,58,Emergency,34
+2,7,2,3,4,6,68,Emergency,57
+2,15,1,1,2,10,158,General Medicine,78
+1,9,3,9,6,2,54,Neurology,21
+1,3,0,3,6,3,177,Neurology,46
+4,3,0,8,5,5,139,Cardiology,25
+1,6,2,2,7,11,57,Neurology,35
+1,8,2,6,5,4,145,Neurology,31
+5,8,4,2,2,7,106,Cardiology,51
+2,10,4,5,5,11,175,Gynecology,30
+3,16,2,4,1,5,54,ICU,59
+1,15,4,7,1,2,47,Emergency,40
+1,4,4,9,6,3,26,Gynecology,0
+4,6,3,1,6,10,133,Gynecology,40
+2,16,3,2,7,2,111,Cardiology,63
+3,12,3,4,7,6,41,Cardiology,39
+3,7,2,8,5,2,23,General Medicine,30
+3,14,2,4,5,8,133,Gynecology,59
+4,14,3,9,4,2,115,ICU,32
+2,15,2,9,7,7,127,Emergency,43
+3,4,1,1,6,10,151,Cardiology,60
+3,6,1,7,4,10,157,Gynecology,26
+3,6,1,3,1,9,38,Cardiology,56
+2,16,4,4,4,11,53,Emergency,46
+2,2,4,8,3,10,142,ICU,2
+1,16,3,9,7,3,81,Neurology,39
+5,16,4,6,4,11,106,Gynecology,58
+5,12,2,2,1,8,127,General Medicine,72
+5,13,1,8,1,7,170,Cardiology,52
+3,14,3,8,4,8,84,Emergency,37
+1,13,1,3,6,5,39,ICU,48
+3,17,1,4,2,5,107,Gynecology,72
+4,6,4,4,2,11,165,General Medicine,39
+5,6,3,5,5,8,120,Gynecology,46
+1,2,4,9,5,3,143,Neurology,0
+1,14,2,3,4,2,87,ICU,61
+2,4,2,8,3,2,175,General Medicine,17
+2,17,1,5,4,4,97,Neurology,61
+5,7,1,5,5,11,19,General Medicine,55
+3,15,0,8,5,8,126,ICU,67
+3,12,3,3,3,6,21,ICU,62
+4,3,4,4,1,8,107,Cardiology,30
+5,7,2,2,5,4,129,Cardiology,68
+1,4,4,4,1,4,152,Gynecology,31
+1,7,0,6,4,10,70,General Medicine,36
+3,3,2,8,6,8,162,ICU,22
+1,15,1,7,7,6,29,Gynecology,51
+5,11,4,4,3,10,125,Gynecology,54
+4,9,0,1,2,6,116,General Medicine,60
+4,2,1,3,7,11,150,General Medicine,33
+4,3,1,2,4,4,47,ICU,59
+5,16,4,4,7,11,173,Neurology,70
+5,16,2,2,3,9,107,Neurology,65
+2,12,1,9,1,7,96,Emergency,49
+4,13,2,2,4,4,91,Neurology,73
+5,8,0,7,6,10,140,ICU,57
+5,6,1,8,7,5,135,ICU,44
+4,4,4,1,7,3,84,Emergency,53
+4,3,2,9,7,4,80,Cardiology,13
+1,14,1,3,6,8,80,Neurology,59
+2,4,2,6,6,5,162,Neurology,32
+3,8,2,3,5,7,88,General Medicine,46
+3,6,2,3,4,3,92,Cardiology,40
+4,3,1,6,6,7,155,General Medicine,40
+3,12,1,8,6,5,54,Emergency,50
+2,9,2,2,7,5,77,ICU,50
+5,9,4,2,2,10,150,ICU,50
+2,16,4,8,5,8,102,Gynecology,35
+5,10,3,1,4,7,162,General Medicine,71
+1,10,3,8,7,2,55,Cardiology,13
+5,17,1,3,4,7,178,Emergency,89
+3,10,2,9,6,4,73,Cardiology,30
+1,6,3,8,6,5,37,Cardiology,14
+5,16,0,7,3,3,106,Neurology,79
+2,11,2,8,2,2,102,Neurology,45
+3,17,0,3,6,7,43,Emergency,83
+2,9,3,2,2,9,45,Gynecology,34
+1,17,1,1,6,7,153,Gynecology,63
+5,8,3,9,7,7,130,Neurology,36
+3,8,3,7,7,8,31,Neurology,25
+1,11,4,5,4,2,126,Emergency,41
+5,6,0,3,6,4,161,General Medicine,67
+4,11,1,6,5,7,99,ICU,55
+1,9,0,8,1,2,120,Neurology,45
+2,14,3,3,5,9,103,ICU,46
+2,10,4,7,1,6,137,Cardiology,19
+5,3,2,5,5,10,73,General Medicine,35
+4,7,4,1,4,8,25,General Medicine,50
+1,6,1,6,3,7,135,Neurology,39
+1,2,0,2,7,4,129,Gynecology,44
+1,9,2,5,2,9,113,Cardiology,29
+5,14,1,7,5,8,23,Emergency,65
+5,16,3,1,4,4,51,Gynecology,69
+4,4,1,8,4,7,91,Neurology,40
+4,7,3,9,5,6,59,General Medicine,43
+1,5,3,4,4,7,87,Neurology,36
+2,7,2,8,2,7,25,General Medicine,28
+2,11,1,3,4,5,149,General Medicine,64
+4,6,4,5,5,11,86,Neurology,37
+3,12,2,2,3,7,32,Gynecology,58
+1,15,2,6,4,4,168,Gynecology,46
+4,16,2,1,1,6,56,General Medicine,71
+2,3,1,2,3,5,102,Gynecology,43
+1,5,0,3,4,5,69,Emergency,58
+2,8,0,5,7,5,32,ICU,49
+1,16,4,6,5,8,115,ICU,52
+1,8,4,4,2,10,117,General Medicine,30
+2,8,4,3,2,6,179,Emergency,43
+4,6,4,6,1,6,167,General Medicine,26
+4,15,0,5,4,3,126,Neurology,76
+1,15,1,3,6,10,20,ICU,55
+5,10,0,8,2,3,126,General Medicine,50
+3,6,3,4,5,6,75,ICU,30
+3,11,1,9,4,9,160,Neurology,45
+3,13,1,7,1,11,55,General Medicine,52
+5,15,1,2,6,11,42,Emergency,89
+3,4,1,5,6,2,173,General Medicine,39
+1,3,3,2,2,6,165,Gynecology,27
+2,13,0,5,1,5,55,ICU,55
+4,12,4,9,1,9,112,Emergency,41
+3,7,1,8,2,3,109,Gynecology,43
+3,5,3,3,1,4,168,ICU,38
+5,5,3,7,5,4,133,Cardiology,33
+4,15,1,7,1,9,115,ICU,70
+2,9,0,9,4,11,41,General Medicine,31
+4,16,4,2,3,11,105,Neurology,63
+3,15,3,2,2,10,176,Emergency,76
+5,12,2,5,2,4,138,Neurology,67
+4,12,2,5,1,5,28,Cardiology,55
+2,7,4,5,6,6,130,ICU,29
+4,14,4,3,1,7,68,Gynecology,53
+4,11,2,2,4,3,66,Cardiology,62
+2,15,4,1,5,8,77,Cardiology,56
+1,7,1,4,2,3,177,Cardiology,36
+4,16,0,3,2,7,119,General Medicine,78
+5,12,3,5,4,5,138,ICU,45
+3,7,3,7,7,9,56,ICU,29
+1,15,3,1,6,8,116,Cardiology,53
+1,15,1,5,2,4,113,ICU,57
+2,4,4,3,3,2,88,Emergency,30
+1,4,3,1,4,5,17,Neurology,41
+5,10,3,1,7,2,164,Emergency,67
+4,3,3,7,2,4,51,Emergency,48
+4,6,3,8,6,7,67,ICU,25
+3,13,2,8,7,5,159,Cardiology,40
+5,8,4,2,4,11,22,ICU,45
+2,11,1,2,2,11,172,ICU,50
+5,13,3,3,5,2,126,Emergency,62
+4,9,0,1,7,4,64,General Medicine,70
+4,11,3,1,4,6,119,Cardiology,54
+4,14,1,9,2,8,41,General Medicine,55
+2,14,2,1,2,8,46,General Medicine,57
+1,11,3,7,7,3,85,ICU,27
+1,13,0,3,6,7,140,Neurology,75
+1,3,3,1,3,2,65,Neurology,34
+5,3,0,3,6,6,120,Cardiology,47
+4,4,4,3,2,5,15,Emergency,32
+2,14,0,4,2,6,69,ICU,65
+1,14,4,5,3,9,177,Gynecology,31
+1,2,3,1,5,2,128,Gynecology,35
+1,10,0,8,5,4,177,Emergency,44
+4,10,4,5,5,5,21,ICU,45
+2,13,0,1,4,8,169,General Medicine,71
+3,15,0,1,1,11,28,General Medicine,88
+5,4,0,6,3,4,47,Emergency,57
+3,9,3,2,5,9,79,ICU,53
+1,11,0,6,7,7,140,Neurology,50
+5,13,3,5,7,10,83,General Medicine,56
+1,5,0,9,1,8,73,ICU,33
+4,17,2,7,2,10,138,Gynecology,54
+1,15,1,1,3,10,60,Neurology,71
+4,6,3,2,1,9,148,Emergency,49
+1,6,3,4,4,3,87,Cardiology,45
+3,7,0,5,2,2,36,Emergency,62
+2,5,1,7,3,8,163,ICU,26
+5,14,1,2,1,10,106,General Medicine,81
+5,11,4,3,4,3,175,ICU,58
+2,17,2,7,1,4,147,Cardiology,42
+2,6,2,2,1,2,28,General Medicine,38
+1,2,2,8,3,2,52,ICU,9
+4,7,4,3,1,11,173,Gynecology,33
+4,13,3,6,5,7,150,ICU,55
+3,4,1,9,1,8,124,Cardiology,30
+2,3,0,2,2,10,120,Emergency,55
+3,2,0,2,4,6,73,Emergency,50
+3,10,2,3,4,2,174,General Medicine,53
+3,15,2,2,1,3,170,Gynecology,60
+2,15,4,1,6,5,22,Cardiology,46
+1,9,2,3,1,3,169,ICU,40
+3,14,3,4,3,6,25,Neurology,46
+1,3,0,8,3,5,17,Gynecology,28
+4,4,4,5,5,4,154,General Medicine,30
+5,16,2,6,2,2,170,Emergency,69
+1,3,1,5,3,3,72,General Medicine,27
+5,14,1,9,4,3,71,Neurology,53
+1,5,0,7,4,6,125,Cardiology,28
+3,16,3,3,3,10,20,Emergency,56
+1,2,1,2,4,4,73,Gynecology,34
+3,11,3,2,5,10,67,Gynecology,48
+3,15,2,2,3,8,69,ICU,59
+4,8,0,4,4,2,162,ICU,56
+5,2,0,4,4,9,85,Gynecology,52
+5,10,2,3,7,2,62,Neurology,79
+5,12,2,5,2,7,128,Cardiology,56
+5,10,2,2,2,10,37,Gynecology,70
+5,12,0,3,6,10,167,ICU,79
+1,3,3,5,5,10,26,General Medicine,25
+3,9,4,1,7,10,149,Cardiology,45
+2,16,2,7,1,9,123,Cardiology,49
+3,10,0,5,3,8,53,Neurology,47
+4,13,0,1,6,4,157,Emergency,78
+4,3,2,4,2,5,102,ICU,34
+5,13,4,4,6,9,107,Gynecology,51
+5,9,1,7,1,3,107,Gynecology,45
+2,9,0,6,5,5,58,Cardiology,42
+1,16,1,1,7,3,70,Emergency,77
+4,6,1,9,6,2,129,General Medicine,32
+1,2,0,2,7,8,144,Neurology,36
+5,2,0,1,6,4,89,ICU,56
+1,8,1,7,6,2,145,Cardiology,24
+2,9,1,8,7,10,87,Cardiology,30
+3,9,2,4,4,8,86,General Medicine,36
+5,4,4,3,4,4,87,Cardiology,45
+5,16,2,5,5,3,138,Emergency,72
+4,14,1,6,4,4,112,ICU,60
+5,10,3,4,1,7,149,Gynecology,46
+4,7,1,4,6,11,83,General Medicine,60
+1,11,3,9,6,2,108,Cardiology,40
+5,11,3,5,2,7,173,Cardiology,56
+5,5,4,5,7,10,139,Emergency,35
+1,3,2,8,6,7,100,Gynecology,27
+1,11,1,8,4,11,86,Gynecology,43
+1,8,4,9,4,6,23,Gynecology,12
+3,2,0,6,5,4,146,Emergency,54
+3,14,0,3,3,5,161,General Medicine,75
+5,9,1,2,3,8,92,Neurology,69
+5,4,0,3,6,6,157,Gynecology,64
+2,4,2,3,3,2,146,ICU,29
+5,10,3,4,4,7,132,Neurology,53
+5,16,0,3,7,5,149,Emergency,96
+3,11,4,3,3,3,140,Emergency,51
+2,16,2,3,3,7,78,ICU,69
+2,13,3,2,1,2,141,Cardiology,56
+3,11,3,4,7,10,147,Neurology,47
+3,13,3,4,3,6,147,Emergency,52
+5,9,0,3,1,6,179,ICU,71
+3,12,1,3,1,2,97,ICU,65
+5,14,0,5,2,4,55,Cardiology,67
+2,7,3,4,3,7,116,ICU,34
+4,11,3,4,3,5,41,Gynecology,53
+5,10,3,3,2,9,89,ICU,51
+4,7,2,7,7,4,125,Cardiology,37
+1,5,0,7,7,7,113,Emergency,44
+3,6,0,6,6,2,50,Cardiology,51
+3,12,1,7,1,3,149,Neurology,45
+1,12,3,3,3,4,79,Cardiology,52
+5,14,1,9,2,11,66,Cardiology,61
+2,15,0,5,2,10,83,General Medicine,62
+1,5,1,9,7,6,161,Neurology,25
+2,6,2,4,2,5,36,Cardiology,37
+3,16,1,8,5,9,63,Emergency,58
+4,14,4,4,3,11,109,Gynecology,54
+1,2,3,1,2,11,85,Gynecology,19
+1,14,0,6,3,5,172,Emergency,70
+2,12,0,3,5,8,30,Cardiology,67
+4,17,2,3,3,7,22,ICU,68
+3,13,4,1,2,6,109,Emergency,70
+1,3,0,6,3,4,125,Neurology,28
+4,13,4,2,6,11,178,Gynecology,56
+5,16,4,4,6,6,147,Gynecology,67
+3,4,3,6,4,8,155,Neurology,25
+5,14,3,8,7,8,56,General Medicine,58
+4,10,4,2,7,6,109,Emergency,66
+1,13,4,2,2,6,134,Gynecology,45
+3,12,1,5,2,2,156,General Medicine,54
+1,3,3,2,2,10,159,Emergency,39
+2,15,0,7,4,9,89,Neurology,57
+3,7,1,5,2,4,60,Neurology,49
+1,4,4,5,3,6,29,ICU,10
+1,8,3,8,4,4,70,General Medicine,24
+4,12,4,4,7,6,127,ICU,40
+4,7,2,5,5,8,27,Cardiology,44
+5,12,0,5,6,4,168,Emergency,72
+3,13,4,2,7,7,36,Cardiology,46
+4,2,1,7,3,2,18,Neurology,32
+3,3,3,5,5,6,143,Emergency,40
+2,4,0,3,2,2,66,Emergency,59
+1,2,0,5,5,9,118,ICU,37
+4,16,2,8,1,10,108,ICU,55
+3,6,1,9,3,2,61,General Medicine,36
+5,12,3,4,5,3,103,General Medicine,54
+4,7,2,3,2,3,69,Neurology,46
+4,11,2,4,5,9,83,Neurology,45
+2,3,2,7,5,11,21,ICU,19
+2,7,3,8,5,7,122,Cardiology,21
+4,12,3,5,2,2,61,Cardiology,54
+2,17,1,8,3,6,114,Neurology,58
+5,4,2,7,5,6,28,Cardiology,28
+1,16,3,1,3,4,171,General Medicine,52
+3,2,1,2,5,8,92,ICU,33
+2,4,0,8,1,7,179,Gynecology,30
+1,4,4,2,1,10,84,ICU,35
+5,9,3,8,4,4,175,Neurology,42
+5,3,4,8,7,6,57,Neurology,20
+4,9,2,7,4,10,167,Gynecology,27
+2,2,2,8,1,7,46,General Medicine,19
+5,14,3,3,4,3,76,General Medicine,61
+5,9,4,5,4,8,150,Emergency,49
+3,15,4,3,3,7,80,Emergency,59
+3,16,2,4,5,9,86,Cardiology,55
+5,4,1,3,7,2,49,Gynecology,62
+3,13,4,1,1,2,165,ICU,53
+3,5,2,7,1,8,97,General Medicine,31
+2,6,3,4,4,9,30,Cardiology,28
+1,15,0,3,5,10,44,Gynecology,65
+2,13,0,8,7,10,63,ICU,52
+5,12,4,7,6,3,26,Cardiology,32
+5,4,4,7,1,2,80,ICU,30
+1,4,3,9,2,11,71,Neurology,2
+3,12,0,2,4,2,38,Cardiology,62
+1,17,2,7,2,7,27,Neurology,54
+1,12,0,7,4,11,122,Gynecology,45
+3,2,2,2,2,2,76,Neurology,33
+2,4,2,1,7,6,179,Cardiology,39
+3,13,0,8,3,2,54,Neurology,52
+1,15,2,7,3,3,44,General Medicine,36
+2,17,4,4,2,5,103,ICU,42
+3,14,0,4,2,4,116,Emergency,77
+1,5,4,5,1,6,108,Gynecology,22
+2,14,2,9,1,5,134,Neurology,30
+1,8,1,4,7,9,146,Gynecology,49
+4,13,3,6,4,8,164,Cardiology,49
+2,14,3,2,4,10,35,ICU,56
+2,15,4,5,3,2,150,Neurology,31
+4,13,0,7,7,9,94,Neurology,60
+2,7,1,4,3,2,133,Neurology,40
+4,4,2,5,4,8,151,ICU,47
+2,6,4,2,3,6,147,ICU,28
+4,14,0,5,5,4,34,General Medicine,70
+2,13,3,8,7,10,44,Neurology,36
+4,11,2,9,2,2,19,Cardiology,39
+4,8,2,1,2,11,89,Cardiology,52
+2,6,3,1,3,6,104,Cardiology,35
+3,2,3,2,1,8,44,ICU,41
+4,11,4,4,2,3,51,General Medicine,51
+3,4,3,4,5,7,164,ICU,31
+4,9,2,5,3,5,164,Neurology,50
+4,2,3,6,7,6,100,Gynecology,36
+5,16,3,6,4,5,141,Neurology,61
+3,7,4,9,3,7,94,Gynecology,15
+4,11,4,4,3,6,179,Neurology,43
+3,14,2,6,6,7,164,Emergency,73
+4,2,2,2,4,3,99,General Medicine,43
+3,3,4,7,5,3,146,Emergency,24
+3,14,0,1,3,7,93,Emergency,84
+1,3,3,8,4,2,83,Emergency,24
+3,13,2,1,1,6,164,Cardiology,71
+3,5,1,6,4,8,61,General Medicine,34
+2,4,3,1,2,9,18,ICU,37
+3,12,2,8,7,4,131,Cardiology,26
+2,13,3,2,4,5,115,ICU,58
+4,12,4,2,6,9,36,Gynecology,49
+3,9,4,9,6,8,32,Cardiology,23
+1,17,2,3,1,6,134,ICU,62
+5,16,1,9,4,11,34,Neurology,61
+1,16,0,7,2,2,148,General Medicine,40
+4,2,3,9,6,4,46,Emergency,29
+3,13,1,7,5,4,73,Neurology,58
+1,10,2,1,2,2,127,ICU,55
+5,6,3,5,2,5,17,ICU,48
+1,15,1,6,7,9,114,Cardiology,46
+3,8,1,7,7,8,20,Gynecology,50
+4,13,0,6,2,6,78,Cardiology,84
+4,12,3,9,6,3,93,Neurology,38
+4,8,1,5,6,5,18,Neurology,60
+5,6,1,3,2,3,45,Neurology,60
+5,12,0,8,1,7,91,Emergency,60
+2,11,4,7,7,6,61,Gynecology,22
+4,13,2,3,3,6,149,Gynecology,66
+4,10,4,5,4,3,148,Emergency,42
+2,16,0,5,3,11,156,Emergency,68
+4,17,0,9,3,3,116,Neurology,62
+5,16,0,9,7,11,50,Emergency,85
+4,5,0,3,1,3,27,Gynecology,64
+5,8,2,2,4,3,112,Neurology,61
+4,15,2,3,5,3,179,ICU,75
+1,5,0,4,4,3,71,General Medicine,39
+4,2,2,8,6,4,57,Emergency,33
+4,9,4,8,6,2,155,Cardiology,27
+5,16,2,1,5,8,24,Neurology,74
+3,7,0,1,6,5,153,Gynecology,68
+1,12,4,3,1,10,93,Gynecology,46
+1,6,0,9,1,9,99,General Medicine,32
+1,2,0,7,4,2,53,Gynecology,20
+5,17,3,5,7,9,100,Cardiology,67
+1,17,0,7,5,7,23,Neurology,59
+4,15,4,5,3,8,95,ICU,57
+2,14,2,9,5,10,176,General Medicine,36
+3,14,2,4,2,9,86,Cardiology,60
+1,8,2,1,2,11,112,Gynecology,49
+4,13,0,7,7,4,19,Cardiology,59
+2,6,1,2,4,3,153,General Medicine,53
+2,10,0,8,6,3,111,Neurology,39
+4,6,2,3,5,2,74,Emergency,51
+1,9,3,4,2,10,143,Neurology,31
+4,10,0,6,2,9,92,General Medicine,53
+5,9,1,4,7,9,41,Neurology,73
+1,13,3,3,2,8,57,Neurology,46
+1,6,0,7,4,4,65,Gynecology,31
+4,5,1,4,5,4,77,Neurology,40
+1,4,1,3,1,11,65,Neurology,40
+5,3,1,7,5,2,108,General Medicine,49
+2,6,1,4,3,6,21,Cardiology,40
+5,12,4,6,1,11,90,Emergency,53
+3,6,2,7,1,3,153,Cardiology,19
+4,16,3,3,4,4,70,Neurology,64
+3,6,0,7,6,9,84,General Medicine,40
+2,5,4,6,2,10,39,Cardiology,17
+4,17,4,9,2,2,164,Cardiology,41
+4,3,0,9,4,3,123,Emergency,36
+2,12,4,4,7,6,90,Gynecology,39
+4,13,1,4,7,8,61,Gynecology,67
+1,14,1,7,4,11,101,ICU,49
+5,13,0,1,2,2,74,ICU,76
+3,5,4,1,6,6,18,Emergency,44
+4,14,2,1,1,6,80,General Medicine,66
+1,8,3,2,3,9,112,Gynecology,40
+5,17,0,6,1,4,64,Gynecology,80
+2,11,3,9,2,9,28,Gynecology,29
+4,16,4,4,6,2,107,Gynecology,47
+4,15,1,9,4,8,142,Gynecology,45
+4,15,2,5,4,3,29,Neurology,64
+5,13,0,1,3,11,23,Cardiology,80
+5,12,2,2,3,7,60,Cardiology,55
+2,4,3,5,2,4,26,ICU,28
+1,9,3,4,2,3,138,ICU,33
+4,8,0,4,5,8,178,Neurology,56
+2,16,4,1,2,7,123,Emergency,64
+1,12,2,9,5,7,65,ICU,30
+1,13,1,4,6,10,46,General Medicine,48
+1,15,2,6,1,8,126,Gynecology,47
+5,13,4,7,5,7,141,Gynecology,44
+5,3,3,2,7,10,53,Cardiology,55
+4,2,1,4,2,3,176,Gynecology,37
+1,16,1,1,3,6,117,ICU,65
+5,7,3,4,5,9,68,Neurology,53
+2,13,0,1,7,3,157,Gynecology,75
+4,13,2,8,3,7,62,Emergency,54
+3,10,2,6,4,4,50,Cardiology,48
+4,16,4,5,1,8,117,General Medicine,57
+2,9,0,2,2,5,60,Gynecology,66
+2,10,1,7,5,11,23,Neurology,50
+4,4,0,9,2,7,48,Emergency,44
+3,8,0,4,2,7,179,Emergency,68
+2,14,1,8,4,4,154,ICU,50
+1,12,0,6,3,9,158,Cardiology,50
+1,17,2,5,2,4,128,Emergency,63
+3,4,0,4,5,3,82,Cardiology,52
+2,8,4,7,2,8,40,Gynecology,18
+1,15,1,1,5,8,38,Gynecology,47
+1,13,0,8,7,9,170,Cardiology,48
+4,7,3,7,7,5,72,Cardiology,35
+3,8,4,7,6,2,92,ICU,12
+4,14,4,4,3,5,125,Cardiology,52
+3,5,2,8,6,6,176,ICU,37
+2,16,1,3,1,10,63,General Medicine,75
+3,9,0,1,3,6,145,Neurology,71
+4,8,4,4,4,2,46,ICU,51
+3,2,2,4,2,6,88,Cardiology,33
+2,17,3,7,1,9,70,General Medicine,43
+2,2,3,7,3,3,67,ICU,12
+2,12,1,8,7,5,138,Emergency,54
+1,7,0,3,5,7,49,ICU,60
+4,7,1,5,1,4,21,Cardiology,43
+4,8,4,9,1,11,47,Neurology,26
+2,5,2,8,7,4,104,Emergency,28
+5,8,0,9,7,5,97,Neurology,48
+5,15,2,2,4,8,59,Cardiology,72
+3,13,1,5,5,2,121,Emergency,66
+1,2,2,9,1,9,27,Neurology,5
+1,14,1,7,5,7,65,Cardiology,61
+5,5,2,4,7,11,158,Gynecology,43
+4,7,0,2,5,6,96,General Medicine,64
+2,16,4,5,3,4,44,General Medicine,39
+3,12,4,6,6,7,87,Cardiology,34
+1,7,2,5,6,11,135,Cardiology,31
+3,9,2,4,5,3,100,General Medicine,43
+3,8,4,6,3,2,17,Gynecology,36
+3,17,2,9,4,5,132,General Medicine,50
+4,8,3,9,3,4,81,Cardiology,25
+3,15,3,8,7,3,112,Gynecology,37
+4,11,3,2,3,8,151,Emergency,66
+1,15,0,8,2,2,160,Cardiology,47
+2,13,2,3,3,2,64,Neurology,56
+4,8,0,7,6,2,48,Emergency,45
+5,7,0,8,1,3,171,Emergency,62
+4,11,0,5,2,10,98,General Medicine,62
+2,16,3,8,5,11,34,ICU,34
+2,5,2,9,5,5,86,Cardiology,12
+4,5,2,7,4,4,106,Neurology,29
+4,7,1,8,3,7,39,Neurology,50
+4,7,1,7,7,3,154,General Medicine,35
+4,15,1,6,7,5,52,Emergency,68
+3,10,1,7,5,4,94,Cardiology,38
+3,11,4,7,6,9,97,Gynecology,27
+1,16,4,2,5,11,109,Gynecology,50
+1,5,3,5,2,9,34,Neurology,28
+2,16,4,8,3,2,149,Emergency,49
+5,3,2,9,3,8,41,Neurology,32
+5,12,2,2,3,10,50,Neurology,79
+4,7,1,5,6,10,118,ICU,47
+2,9,3,6,2,9,75,ICU,44
+4,10,0,4,7,5,23,Gynecology,59
+5,16,2,5,6,2,113,Neurology,64
+4,12,3,6,2,4,137,General Medicine,35
+5,12,1,9,2,6,156,Gynecology,39
+2,12,3,3,2,9,41,Emergency,49
+2,5,1,4,1,2,76,Neurology,46
+1,11,3,6,5,10,26,Neurology,31
+5,16,2,4,3,2,91,General Medicine,61
+5,6,4,1,7,9,51,General Medicine,52
+1,5,1,2,3,8,119,General Medicine,37
+5,6,0,5,1,5,156,ICU,58
+2,12,2,3,2,11,42,Cardiology,58
+2,11,3,4,2,7,124,Gynecology,44
+1,17,0,6,4,8,142,Neurology,61
+4,15,2,2,2,8,102,Gynecology,61
+4,14,0,1,3,10,98,Gynecology,84
+4,17,2,6,7,5,153,Cardiology,62
+4,7,3,3,5,9,86,Cardiology,50
+3,10,0,1,1,10,155,General Medicine,72
+3,6,3,3,2,5,162,General Medicine,29
+5,17,3,2,2,4,39,Neurology,77
+2,8,1,2,7,7,52,Neurology,60
+1,12,4,8,2,10,84,Gynecology,18
+1,10,4,5,2,2,105,General Medicine,30
+4,10,0,6,2,9,41,Gynecology,54
+1,5,4,3,4,11,117,Cardiology,33
+2,5,2,4,3,6,71,Cardiology,31
+3,11,4,6,2,5,95,Gynecology,36
+2,16,3,8,2,6,110,Emergency,52
+1,15,4,1,3,7,144,Cardiology,48
+5,15,1,8,3,2,140,General Medicine,52
+2,3,4,1,4,2,128,Cardiology,31
+5,17,4,3,4,10,63,Neurology,66
+4,13,4,2,4,10,42,Gynecology,58
+3,12,4,4,2,6,116,Neurology,43
+5,3,0,1,7,3,114,Cardiology,60
+1,8,2,7,5,7,65,Gynecology,27
+3,14,2,6,1,8,87,ICU,42
+5,10,4,2,3,11,43,General Medicine,46
+3,7,4,9,4,7,24,ICU,16
+2,7,4,7,5,2,107,Gynecology,16
+5,6,1,3,6,2,162,General Medicine,42
+5,14,1,1,5,3,29,Neurology,86
+2,3,0,4,1,6,68,Neurology,33
+3,3,1,9,7,6,170,ICU,26
+3,11,3,3,6,7,75,Gynecology,58
+1,16,1,6,6,10,118,ICU,59
+1,13,0,9,1,4,46,Gynecology,43
+3,17,2,5,5,7,78,Emergency,69
+4,7,0,2,7,5,18,ICU,62
+5,7,2,7,5,4,127,Cardiology,50
+4,3,4,1,7,8,88,Emergency,54
+4,5,2,9,2,8,43,General Medicine,24
+3,7,0,6,1,11,23,ICU,52
+1,13,0,9,4,10,55,Emergency,63
+5,7,2,6,4,4,76,General Medicine,49
+2,3,0,5,1,5,107,Cardiology,32
+1,8,2,8,4,11,37,Cardiology,26
+1,3,1,9,6,2,166,Cardiology,21
+3,14,3,6,5,9,45,ICU,56
+3,12,2,3,1,11,63,General Medicine,60
+2,17,2,8,5,2,99,Gynecology,44
+1,13,4,1,4,8,25,Neurology,47
+5,9,3,6,7,11,114,Emergency,49
+3,10,0,9,5,5,111,General Medicine,47
+5,15,1,3,1,9,69,Gynecology,65
+5,4,2,5,7,8,159,Emergency,43
+5,8,1,9,6,11,110,Gynecology,47
+1,11,3,7,7,5,64,General Medicine,17
+2,17,0,8,1,3,144,ICU,52
+2,10,3,7,3,8,88,Gynecology,45
+4,17,3,9,5,4,178,Cardiology,60
+2,15,0,7,4,2,116,ICU,53
+2,4,0,4,5,2,179,Neurology,46
+1,17,1,4,3,11,56,Gynecology,65
+4,13,1,2,3,7,21,ICU,72
+3,14,1,5,1,9,119,Emergency,60
+1,7,0,5,2,11,114,Cardiology,37
+3,4,1,6,6,4,137,General Medicine,30
+1,8,1,3,6,5,129,Cardiology,42
+5,5,1,8,3,8,21,ICU,48
+3,15,1,4,1,8,134,General Medicine,73
+4,14,1,5,7,6,139,Emergency,70
+4,14,4,3,7,8,113,Neurology,51
+2,6,4,4,5,2,27,Neurology,30
+5,9,4,4,7,4,85,General Medicine,50
+5,2,1,6,2,6,179,Emergency,47
+3,3,3,5,5,4,57,Neurology,36
+2,11,4,2,2,10,129,Emergency,54
+1,6,1,1,6,8,29,Gynecology,53
+3,6,4,2,4,6,78,Cardiology,28
+3,3,2,6,3,5,66,Emergency,44
+4,3,0,5,5,4,48,Cardiology,47
+1,3,2,4,6,7,73,General Medicine,30
+2,10,4,9,2,3,142,General Medicine,15
+1,13,3,3,4,5,20,Neurology,40
+1,2,1,9,3,11,95,Cardiology,11
+1,16,4,2,5,11,171,Emergency,53
+5,4,3,1,3,2,88,Neurology,50
+3,7,3,3,1,7,151,ICU,35
+5,14,0,1,1,5,148,Emergency,97
+4,6,4,5,2,4,151,Emergency,31
+3,12,2,1,1,2,109,General Medicine,75
+1,17,4,6,4,3,44,Gynecology,42
+1,4,0,6,5,8,33,Cardiology,38
+4,6,0,3,6,3,146,General Medicine,60
+3,12,0,4,5,8,25,Gynecology,56
+2,16,3,1,1,11,49,General Medicine,63
+3,12,4,7,1,2,15,Neurology,40
+2,2,4,3,7,9,160,Gynecology,19
+3,12,3,5,3,11,124,Neurology,57
+2,9,4,4,2,11,174,Gynecology,38
+1,10,1,8,2,8,98,ICU,40
+4,7,4,5,3,2,42,Cardiology,33
+4,4,2,5,1,8,103,Gynecology,41
+2,7,0,2,7,8,44,General Medicine,50
+1,11,2,6,4,4,56,Cardiology,34
+4,2,1,8,7,11,65,Cardiology,38
+2,9,4,8,4,10,72,General Medicine,14
+4,9,1,2,5,6,75,Cardiology,63
+5,12,2,1,5,6,113,Emergency,75
+2,2,4,7,5,9,125,Neurology,16
+2,17,0,3,3,8,44,Gynecology,71
+5,15,1,6,3,5,125,ICU,67
+5,6,1,6,1,4,43,ICU,42
+2,11,3,8,2,9,47,General Medicine,30
+1,15,0,7,4,5,157,Emergency,65
+1,3,4,6,5,4,155,Emergency,19
+4,10,1,6,3,11,133,Cardiology,63
+5,5,2,1,3,7,95,Cardiology,64
+3,11,3,3,5,7,16,Cardiology,43
+4,12,4,1,3,3,109,ICU,65
+3,8,0,3,7,6,165,Gynecology,61
+3,3,0,5,5,7,85,Cardiology,46
+1,9,3,8,3,11,122,Neurology,23
+2,4,2,1,6,11,114,Gynecology,38
+3,6,1,5,5,3,116,Neurology,42
+4,7,3,6,6,2,24,Gynecology,40
+3,13,0,9,3,3,26,ICU,44
+4,10,1,1,5,6,22,Cardiology,60
+2,3,3,6,6,2,76,ICU,11
+1,17,2,3,2,11,160,General Medicine,67
+3,5,1,4,3,11,48,General Medicine,40
+4,4,0,8,6,9,84,General Medicine,41
+3,4,0,1,2,11,129,ICU,56
+5,7,3,7,6,11,116,Neurology,24
+2,12,2,3,4,8,164,General Medicine,56
+3,6,3,4,3,10,158,Gynecology,42
+1,13,2,8,3,10,17,Gynecology,39
+1,17,3,1,7,4,105,Neurology,62
+3,10,4,2,6,2,63,ICU,60
+5,12,4,6,1,5,150,Neurology,54
+1,17,3,6,4,2,83,Gynecology,42
+5,14,0,6,5,7,142,Cardiology,72
+5,17,3,6,1,6,47,ICU,63
+5,4,0,9,1,9,140,ICU,37
+1,12,4,9,6,9,160,ICU,22
+2,8,4,3,3,3,60,Gynecology,33
+4,14,4,7,2,6,172,Emergency,59
+4,3,4,2,3,4,133,Gynecology,34
+4,6,4,4,5,7,26,Gynecology,31
+5,8,4,1,7,4,21,Gynecology,52
+4,7,3,2,1,5,115,ICU,50
+3,8,1,1,1,8,28,General Medicine,62
+4,7,4,8,4,8,83,Cardiology,37
+4,12,1,8,6,10,147,Gynecology,50
+2,17,2,3,2,5,21,Gynecology,66
+3,7,3,8,1,5,179,General Medicine,33
+3,4,4,5,2,2,136,ICU,25
+5,14,4,9,4,9,150,Gynecology,37
+1,4,0,9,6,3,118,Cardiology,26
+5,10,3,6,3,10,83,Neurology,53
+4,13,2,6,4,5,134,General Medicine,57
+5,7,0,4,6,10,99,General Medicine,60
+4,10,3,5,4,8,145,Neurology,51
+2,7,1,3,3,7,129,Cardiology,42
+4,3,0,5,3,6,41,Cardiology,41
+2,7,2,5,6,5,125,General Medicine,40
+2,7,3,6,4,4,30,General Medicine,17
+3,16,2,1,2,4,77,Gynecology,65
+2,12,2,2,4,3,161,Neurology,51
+2,13,0,9,6,8,179,Gynecology,37
+1,17,1,4,1,8,150,Emergency,71
+3,9,2,9,2,6,114,Neurology,33
+4,13,3,9,5,7,69,ICU,31
+4,3,0,2,2,8,120,Cardiology,53
+1,9,0,1,2,3,93,Neurology,65
+1,2,3,9,2,4,66,Cardiology,9
+4,13,4,4,4,5,21,Cardiology,49
+1,13,4,9,1,3,174,Cardiology,17
+3,10,4,5,1,8,143,ICU,16
+5,9,2,9,1,4,152,Emergency,46
+1,14,3,8,4,4,160,General Medicine,33
+4,11,1,7,1,9,173,Emergency,75
+3,10,1,6,2,7,113,Neurology,45
+4,14,4,3,3,7,91,Gynecology,54
+4,15,1,3,4,6,42,Emergency,88
+5,12,4,3,1,3,178,General Medicine,49
+2,11,1,1,2,4,106,Gynecology,57
+2,12,3,9,6,4,129,Neurology,36
+1,8,4,9,1,6,58,General Medicine,9
+4,10,1,7,5,11,72,Neurology,55
+3,15,0,5,4,4,120,Neurology,69
+1,8,3,3,3,10,17,Emergency,42
+3,4,1,9,5,4,54,Gynecology,25
+2,7,3,6,6,4,78,Emergency,32
+3,9,4,2,7,8,51,General Medicine,43
+2,15,0,1,5,11,97,Cardiology,77
+5,11,1,6,5,8,75,ICU,62
+2,10,4,9,4,8,32,Cardiology,12
+5,9,4,9,5,2,77,General Medicine,37
+5,3,4,4,6,7,90,Gynecology,36
+1,4,2,6,5,11,155,Neurology,26
+5,8,3,9,5,11,16,Emergency,42
+1,13,0,9,2,6,150,Neurology,50
+5,9,4,5,7,9,36,General Medicine,42
+5,3,4,8,2,9,34,Emergency,35
+1,8,1,1,4,4,35,ICU,50
