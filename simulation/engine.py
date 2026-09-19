@@ -13,7 +13,7 @@ class SimulationEngine:
         # Metrics
         self.metrics = {
             "patients_served": 0,
-            "patients_waiting": 0,
+            "patients_waiting": 0,      # peak queue length seen during simulation
             "total_wait_time": 0,
             "bottlenecks_hit": 0
         }
@@ -36,55 +36,65 @@ class SimulationEngine:
     def process_waiting_queue(self):
         """
         Dummy scheduling logic. To be replaced by the actual Scheduler.
-        For now, simply checks if basic resources are available for the first person in line.
+        Loops through the waiting queue and serves ALL patients that can be
+        allocated resources right now, not just the first one.
         """
-        if not self.waiting_queue:
-            return
-            
-        patient = self.waiting_queue[0]
-        
-        # Check resources (Simplified for MVP)
-        can_allocate = True
-        
-        if patient["needs_icu"] and not self.resource_manager.is_available('hospital', 'icu'):
-            can_allocate = False
-        elif not patient["needs_icu"] and not self.resource_manager.is_available('hospital', 'bed'):
-            can_allocate = False
-            
-        if patient["needs_doctor"] and not self.resource_manager.is_available('hospital', 'doctor'):
-            can_allocate = False
-            
-        if patient["needs_medicine"] and not self.resource_manager.is_available('medicine', 'painkillers'):
-            can_allocate = False
-            
-        if can_allocate:
-            self.waiting_queue.pop(0)
-            
-            # Allocate
-            if patient["needs_icu"]:
-                self.resource_manager.allocate('hospital', 'icu')
-            else:
-                self.resource_manager.allocate('hospital', 'bed')
-                
-            if patient["needs_doctor"]:
-                self.resource_manager.allocate('hospital', 'doctor')
-            if patient["needs_medicine"]:
-                self.resource_manager.allocate('medicine', 'painkillers')
-                
-            patient["status"] = "IN_TREATMENT"
-            wait_time = self.current_time - patient["arrival_time"]
-            self.metrics["total_wait_time"] += wait_time
-            
-            # Schedule TREATMENT_COMPLETE
-            completion_time = self.current_time + patient["treatment_duration"]
-            heapq.heappush(self.event_queue, SimulationEvent(
-                time=completion_time,
-                event_type=EventType.TREATMENT_COMPLETE,
-                patient_id=patient["id"],
-                payload=patient
-            ))
-        else:
-            self.metrics["bottlenecks_hit"] += 1
+        # FIX #1: Loop until a full pass finds no one can be served
+        served_any = True
+        while served_any and self.waiting_queue:
+            served_any = False
+            for i, patient in enumerate(self.waiting_queue):
+                # Check resources (Simplified for MVP)
+                can_allocate = True
+
+                if patient["needs_icu"] and not self.resource_manager.is_available('hospital', 'icu'):
+                    can_allocate = False
+                elif not patient["needs_icu"] and not self.resource_manager.is_available('hospital', 'bed'):
+                    can_allocate = False
+
+                if patient["needs_doctor"] and not self.resource_manager.is_available('hospital', 'doctor'):
+                    can_allocate = False
+
+                if patient["needs_medicine"] and not self.resource_manager.is_available('medicine', 'painkillers'):
+                    can_allocate = False
+
+                if can_allocate:
+                    self.waiting_queue.pop(i)
+
+                    # Allocate
+                    if patient["needs_icu"]:
+                        self.resource_manager.allocate('hospital', 'icu')
+                    else:
+                        self.resource_manager.allocate('hospital', 'bed')
+
+                    if patient["needs_doctor"]:
+                        self.resource_manager.allocate('hospital', 'doctor')
+                    if patient["needs_medicine"]:
+                        self.resource_manager.allocate('medicine', 'painkillers')
+
+                    patient["status"] = "IN_TREATMENT"
+                    wait_time = self.current_time - patient["arrival_time"]
+                    self.metrics["total_wait_time"] += wait_time
+
+                    # Schedule TREATMENT_COMPLETE
+                    completion_time = self.current_time + patient["treatment_duration"]
+                    heapq.heappush(self.event_queue, SimulationEvent(
+                        time=completion_time,
+                        event_type=EventType.TREATMENT_COMPLETE,
+                        patient_id=patient["id"],
+                        payload=patient
+                    ))
+                    served_any = True
+                    break  # restart loop with updated queue
+
+            if not served_any and self.waiting_queue:
+                # Queue has patients but nobody could be served — real bottleneck
+                self.metrics["bottlenecks_hit"] += 1
+
+        # FIX #2: Track peak queue length (not just end-of-day snapshot)
+        current_waiting = len(self.waiting_queue)
+        if current_waiting > self.metrics["patients_waiting"]:
+            self.metrics["patients_waiting"] = current_waiting
 
     def run_simulation(self, scenario_type="normal"):
         self.load_scenario(scenario_type)
@@ -101,7 +111,7 @@ class SimulationEngine:
                 patient = event.payload
                 patient["status"] = "DISCHARGED"
                 self.metrics["patients_served"] += 1
-                
+
                 # Release resources
                 if patient["needs_icu"]:
                     self.resource_manager.release('hospital', 'icu')
@@ -109,6 +119,7 @@ class SimulationEngine:
                     self.resource_manager.release('hospital', 'bed')
                 if patient["needs_doctor"]:
                     self.resource_manager.release('hospital', 'doctor')
+                # Note: medicine is consumable — it is used up, not released back
                 
             elif event.event_type == EventType.STAFF_SHORTAGE:
                 res = event.payload["resource"]
@@ -136,7 +147,10 @@ class SimulationEngine:
             # Try to process waiting queue at each time step
             self.process_waiting_queue()
             
-        self.metrics["patients_waiting"] = len(self.waiting_queue)
+        # patients_waiting already tracks the peak value — also add any still in queue at end
+        end_waiting = len(self.waiting_queue)
+        if end_waiting > self.metrics["patients_waiting"]:
+            self.metrics["patients_waiting"] = end_waiting
         
         return {
             "status": "COMPLETED",
