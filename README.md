@@ -8,6 +8,16 @@ It simulates patient flow through a hospital while considering **urgency, waitin
 
 ---
 
+## Demo Video
+
+
+
+https://github.com/user-attachments/assets/00d490a8-9efc-41a4-91c6-1d56c54240a6
+
+
+
+
+
 ## What MEDFLOW Does
 
 Hospitals constantly have to make operational decisions such as:
