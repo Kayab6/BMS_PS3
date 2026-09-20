@@ -1,559 +1,961 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MEDFLOW — Hospital Operations Center</title>
-  <meta name="description" content="MEDFLOW Hospital Operations Center. Real-time patient priority, resource allocation, and AI-driven clinical insights.">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MEDFLOW — Hospital Operations Platform</title>
+  <meta name="description" content="MEDFLOW is a premium real-time hospital operations management platform with AI-powered patient flow, resource management, and predictive analytics." />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
+<div class="app-shell">
 
-<!-- =====================================================================
-     HEADER NAVIGATION
-     ===================================================================== -->
-<header class="mf-header">
-  <div class="mf-header-inner">
-
-    <!-- Brand -->
-    <a href="/" class="mf-brand">
-      <div class="mf-brand-icon">✚</div>
-      <div class="mf-brand-text">
-        <span class="mf-brand-name">MEDFLOW</span>
-        <span class="mf-brand-sub">Hospital Operations Center</span>
+  <!-- ════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.5l3 3 5-5m3 4.5l3-3-3-3" />
+            <rect x="3" y="3" width="18" height="18" rx="3" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="sidebar-logo-text">
+          <span class="sidebar-logo-name">MEDFLOW</span>
+          <span class="sidebar-logo-sub">Operations Platform</span>
+        </div>
       </div>
-    </a>
+    </div>
 
-    <!-- Primary Nav -->
-    <nav class="mf-nav">
-      <a href="/" class="mf-nav-link active">Dashboard</a>
-      <a href="/patients" class="mf-nav-link">Patients</a>
-      <a href="/scheduling" class="mf-nav-link">Scheduling</a>
-      <a href="/simulation" class="mf-nav-link">Simulation</a>
-      <a href="/resources" class="mf-nav-link">Resources</a>
-      <a href="/analytics" class="mf-nav-link">Analytics</a>
-      <a href="/ai-insights" class="mf-nav-link">AI Insights</a>
-      <div class="mf-nav-divider"></div>
-      <a href="/alerts" class="mf-nav-link">Alerts</a>
-      <a href="/inventory" class="mf-nav-link">Inventory</a>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Core</div>
+
+      <div class="nav-item active" data-page="dashboard" id="nav-dashboard">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span class="nav-item-label">Dashboard</span>
+      </div>
+
+      <div class="nav-item" data-page="queue" id="nav-queue">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h10M9 6h10M9 18h10M4 6v.01M4 12v.01M4 18v.01"/></svg>
+        <span class="nav-item-label">Patient Priority Queue</span>
+      </div>
+
+      <div class="nav-item" data-page="wait-time" id="nav-wait-time">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="9"/><polyline points="12,7 12,12 15.5,15.5"/></svg>
+        <span class="nav-item-label">Wait Time Prediction</span>
+      </div>
+
+      <div class="sidebar-section-label">Operations</div>
+
+      <div class="nav-item" data-page="resources" id="nav-resources">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16M3 21h18M9 10h1m5 0h1M9 14h1m5 0h1M13 21v-4a1 1 0 00-1-1h-1a1 1 0 00-1 1v4"/></svg>
+        <span class="nav-item-label">Resource Management</span>
+      </div>
+
+      <div class="nav-item" data-page="alerts" id="nav-alerts">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        <span class="nav-item-label">Operational Alerts</span>
+      </div>
+
+      <div class="nav-item" data-page="inventory" id="nav-inventory">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0v10l-8 4M4 7v10l8 4M12 11l8-4M12 11L4 7m8 4v10"/></svg>
+        <span class="nav-item-label">Inventory</span>
+      </div>
+
+      <div class="sidebar-section-label">Intelligence</div>
+
+      <div class="nav-item" data-page="analytics" id="nav-analytics">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+        <span class="nav-item-label">Analytics &amp; Reports</span>
+      </div>
+
+      <div class="nav-item" data-page="ai-insights" id="nav-ai-insights">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m1.636-6.364l.707.707M12 21v-1M7.05 7.05l-.707-.707M16.95 7.05l.707-.707M7.05 16.95l-.707.707M16.95 16.95l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+        <span class="nav-item-label">AI Operations Insights</span>
+      </div>
     </nav>
 
-    <!-- Right Actions -->
-    <div class="mf-header-actions">
-      <div class="mf-status-pill">
-        <span class="mf-status-dot"></span>
-        <span id="headerSystemStatus">LIVE</span>
-      </div>
-      <button class="mf-icon-btn" title="Notifications" aria-label="Notifications">
-        🔔
-        <span class="mf-notif-badge"></span>
-      </button>
-      <div class="mf-profile" title="Administrator">
-        <div class="mf-avatar">DR</div>
-        <span class="mf-profile-name">Dr. Jenkins</span>
+    <div class="sidebar-footer">
+      <div class="sidebar-status">
+        <div class="status-dot"></div>
+        <span>System Online</span>
       </div>
     </div>
+  </aside>
 
-  </div>
-</header>
+  <!-- ════════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════════ -->
+  <div class="main-content">
 
-<!-- =====================================================================
-     MAIN PAGE
-     ===================================================================== -->
-<main class="mf-page">
+    <!-- Dynamic Header -->
+    <header class="header" id="app-header">
+      <div class="header-left">
+        <div class="header-title" id="header-title">Dashboard</div>
+        <div class="header-subtitle" id="header-subtitle">Real-time hospital operations overview</div>
+      </div>
+      <div class="header-right" id="header-actions">
+        <div class="header-badge" id="header-time-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="9"/><polyline points="12,7 12,12 15.5,15.5"/></svg>
+          <span id="header-clock">--:--</span>
+        </div>
+        <button class="btn-primary" id="btn-run-simulation">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          Run Simulation
+        </button>
+      </div>
+    </header>
 
-  <!-- ====== HERO ====== -->
-  <div class="mf-container">
-    <div class="mf-hero">
+    <!-- ──────────────────────────────────────
+         PAGE: DASHBOARD
+    ────────────────────────────────────── -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1 class="page-title">Hospital Operations Overview</h1>
+        <p class="page-subtitle">Real-time monitoring across all departments and resources.</p>
+      </div>
 
-      <!-- Left: Editorial Content -->
-      <div class="mf-hero-content">
-        <p class="mf-hero-eyebrow">Intelligent Hospital Operations</p>
-        <p class="mf-hero-welcome">Welcome back,</p>
-        <h1 class="mf-hero-heading">
-          Here's what's<br>happening <em>today.</em>
-        </h1>
-        <p class="mf-hero-sub">
-          Real-time insights. Smarter decisions. Better care.
-        </p>
+      <!-- Stat Cards -->
+      <div class="dashboard-stat-grid">
+        <div class="stat-card">
+          <div class="stat-card-accent accent-red"></div>
+          <div class="stat-card-label">Waiting Patients</div>
+          <div class="stat-card-value" id="dash-waiting">—</div>
+          <div class="stat-card-sub">Pending allocation</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-accent accent-amber"></div>
+          <div class="stat-card-label">Avg Wait Time</div>
+          <div class="stat-card-value" id="dash-wait-time">—</div>
+          <div class="stat-card-sub">minutes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-accent accent-green"></div>
+          <div class="stat-card-label">Beds Available</div>
+          <div class="stat-card-value" id="dash-beds">—</div>
+          <div class="stat-card-sub">of 20 general beds</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-accent accent-blue"></div>
+          <div class="stat-card-label">ICU Available</div>
+          <div class="stat-card-value" id="dash-icu">—</div>
+          <div class="stat-card-sub">of 8 ICU beds</div>
+        </div>
+      </div>
 
-        <!-- Pillars -->
-        <div class="mf-hero-pillars">
-          <div class="mf-hero-pillar">
-            <div class="mf-hero-pillar-icon">◎</div>
-            <div class="mf-hero-pillar-title">Optimised Resources</div>
-            <div class="mf-hero-pillar-sub">More care. Less waste.</div>
+      <!-- Main Grid -->
+      <div class="dashboard-main-grid">
+        <!-- Queue by Department -->
+        <div class="chart-card">
+          <div class="chart-card-title">Queue by Department</div>
+          <div class="chart-card-subtitle">Active patient distribution across hospital departments</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-dept-queue"></canvas>
           </div>
-          <div class="mf-hero-pillar">
-            <div class="mf-hero-pillar-icon">◑</div>
-            <div class="mf-hero-pillar-title">Reduced Wait Times</div>
-            <div class="mf-hero-pillar-sub">Faster access. Happier patients.</div>
+        </div>
+
+        <!-- Resource Snapshot -->
+        <div class="chart-card">
+          <div class="chart-card-title">Resource Snapshot</div>
+          <div class="chart-card-subtitle">Current availability</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-resource-snapshot"></canvas>
           </div>
-          <div class="mf-hero-pillar">
-            <div class="mf-hero-pillar-icon">◈</div>
-            <div class="mf-hero-pillar-title">Data-Driven Decisions</div>
-            <div class="mf-hero-pillar-sub">Insights that create real impact.</div>
+        </div>
+      </div>
+
+      <!-- Bottom Grid -->
+      <div class="dashboard-bottom-grid">
+        <!-- Urgency Mix -->
+        <div class="chart-card">
+          <div class="chart-card-title">Patient Urgency Mix</div>
+          <div class="chart-card-subtitle">Distribution by priority level</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-urgency-mix"></canvas>
           </div>
         </div>
 
-        <div class="mf-hero-datetime" style="margin-top:var(--space-lg);">
-          <span class="mf-hero-date" id="heroDateTime">—</span>
-        </div>
-      </div>
-
-      <!-- Right: Visual Panel -->
-      <div class="mf-hero-visual">
-        <img
-          src="{{ url_for('static', filename='img/hero_corridor.jpg') }}"
-          alt="Hospital corridor"
-          class="mf-hero-img"
-          onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #0B2B24 0%, #12503F 60%, #166B52 100%)'"
-        >
-        <div class="mf-hero-caption">
-          <span class="mf-hero-caption-tag">01 — Patients · People · Progress</span>
-          <div class="mf-hero-caption-text">A Healthier<br><em>Tomorrow</em> in Motion.</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ====== OPERATIONAL KPIs ====== -->
-  <div class="mf-container mf-section-first">
-    <div class="mf-section-label">Operational Key Performance Indicators</div>
-
-    <div class="mf-kpi-grid">
-
-      <!-- 1. Patients Served -->
-      <div class="mf-kpi-card">
-        <span class="mf-kpi-status ok"></span>
-        <div class="mf-kpi-icon">🏥</div>
-        <div class="mf-kpi-label">Patients Served</div>
-        <div class="mf-kpi-value" id="kpiServed">—</div>
-        <div class="mf-kpi-sub">discharged</div>
-      </div>
-
-      <!-- 2. Patients Waiting -->
-      <div class="mf-kpi-card">
-        <span class="mf-kpi-status ok" id="kpiWaitingStatus"></span>
-        <div class="mf-kpi-icon">⏳</div>
-        <div class="mf-kpi-label">Patients Waiting</div>
-        <div class="mf-kpi-value" id="kpiWaiting">—</div>
-        <div class="mf-kpi-sub">in queue</div>
-      </div>
-
-      <!-- 3. Critical Patients -->
-      <div class="mf-kpi-card">
-        <span class="mf-kpi-status crit" id="kpiCriticalStatus"></span>
-        <div class="mf-kpi-icon">🚨</div>
-        <div class="mf-kpi-label">Critical Patients</div>
-        <div class="mf-kpi-value" id="kpiCritical">—</div>
-        <div class="mf-kpi-sub">urgency ≥ 4</div>
-      </div>
-
-      <!-- 4. Avg Wait Time -->
-      <div class="mf-kpi-card">
-        <span class="mf-kpi-status warn"></span>
-        <div class="mf-kpi-icon">⏱</div>
-        <div class="mf-kpi-label">Avg Waiting Time</div>
-        <div class="mf-kpi-value" id="kpiAvgWait">—</div>
-        <div class="mf-kpi-sub">minutes</div>
-      </div>
-
-      <!-- 5. ICU Utilization -->
-      <div class="mf-kpi-card">
-        <span class="mf-kpi-status warn" id="kpiIcuStatus"></span>
-        <div class="mf-kpi-icon">🩺</div>
-        <div class="mf-kpi-label">ICU Utilization</div>
-        <div class="mf-kpi-value" id="kpiIcuUtil">—</div>
-        <div class="mf-kpi-sub">capacity</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ====== STAFF ON DUTY ====== -->
-  <div class="mf-container mf-section">
-    <div class="mf-section-label">Staff On Duty</div>
-
-    <div class="mf-staff-grid">
-
-      <div class="mf-staff-card">
-        <div class="mf-staff-left">
-          <div class="mf-staff-label">Doctors</div>
-          <div class="mf-staff-value" id="staffDoctors">—</div>
-          <div class="mf-staff-sub">on duty</div>
-        </div>
-        <div class="mf-staff-icon">👨‍⚕️</div>
-      </div>
-
-      <div class="mf-staff-card">
-        <div class="mf-staff-left">
-          <div class="mf-staff-label">Nurses</div>
-          <div class="mf-staff-value" id="staffNurses">—</div>
-          <div class="mf-staff-sub">on duty</div>
-        </div>
-        <div class="mf-staff-icon">👩‍⚕️</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ====== WAIT TIME PREDICTION ====== -->
-  <div class="mf-container mf-section">
-    <div class="mf-section-label">Wait Time Prediction</div>
-
-    <div class="mf-predict-panel">
-
-      <div class="mf-predict-header">
-        <div class="mf-predict-title-block">
-          <span class="mf-predict-eyebrow">ML-Powered Operational Tool</span>
-          <div class="mf-predict-title">Predict Patient<br>Wait Time</div>
-        </div>
-        <div class="mf-predict-result">
-          <span class="mf-predict-result-label">Predicted Waiting Time</span>
-          <span class="mf-predict-result-value" id="mlPredictedWaitDisplay">—</span>
-          <div class="mf-predict-result-note">Based on queue length, urgency, ICU/bed availability and staffing availability.</div>
-        </div>
-      </div>
-
-      <div class="mf-predict-form">
-        <div class="mf-predict-field">
-          <label class="mf-predict-field-label">Department</label>
-          <select id="mlDeptInput" class="mf-predict-select">
-            <option value="Emergency">Emergency</option>
-            <option value="ICU">ICU</option>
-            <option value="Cardiology">Cardiology</option>
-            <option value="Neurology">Neurology</option>
-            <option value="General Medicine">General Medicine</option>
-            <option value="Gynecology">Gynecology</option>
-          </select>
-        </div>
-        <div class="mf-predict-field">
-          <label class="mf-predict-field-label">Urgency Level</label>
-          <select id="mlUrgencyInput" class="mf-predict-select">
-            <option value="1">1 — Minimal</option>
-            <option value="2">2 — Low</option>
-            <option value="3">3 — Moderate</option>
-            <option value="4" selected>4 — High Priority</option>
-            <option value="5">5 — Critical</option>
-          </select>
-        </div>
-        <div class="mf-predict-field">
-          <label class="mf-predict-field-label">Queue Length</label>
-          <input type="number" id="mlQueueLengthInput" class="mf-predict-input" value="10" min="0" max="100">
-        </div>
-        <div class="mf-predict-field">
-          <label class="mf-predict-field-label">Treatment Duration (min)</label>
-          <input type="number" id="mlTreatmentDurInput" class="mf-predict-input" value="30" min="5" max="300">
-        </div>
-        <div class="mf-predict-field">
-          <label class="mf-predict-field-label">Bed Availability</label>
-          <input type="number" id="mlBedAvailInput" class="mf-predict-input" value="4" min="0" max="50">
-        </div>
-        <div class="mf-predict-field">
-          <label class="mf-predict-field-label">ICU Availability</label>
-          <input type="number" id="mlIcuAvailInput" class="mf-predict-input" value="2" min="0" max="20">
-        </div>
-        <div class="mf-predict-field">
-          <label class="mf-predict-field-label">Doctor Availability</label>
-          <input type="number" id="mlDoctorAvailInput" class="mf-predict-input" value="3" min="0" max="30">
-        </div>
-        <div class="mf-predict-field">
-          <label class="mf-predict-field-label">Nurse Availability</label>
-          <input type="number" id="mlNurseAvailInput" class="mf-predict-input" value="5" min="0" max="50">
-        </div>
-      </div>
-
-      <div class="mf-predict-footer">
-        <p class="mf-predict-explanation">
-          MEDFLOW's ML model considers queue dynamics, urgency triage, resource availability and department load to predict patient wait time in real-time.
-        </p>
-        <div style="display:flex;gap:var(--space-md);">
-          <button id="syncHospitalStateBtn" class="btn-secondary" type="button">↻ Sync Live State</button>
-          <button id="predictWaitBtn" class="btn-primary" type="button">⚡ Predict Wait Time</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ====== RESOURCE STATUS + ALERTS (2-col) ====== -->
-  <div class="mf-container mf-section">
-    <div class="mf-two-col">
-
-      <!-- Resource Status -->
-      <div>
-        <div class="mf-section-label">Real-Time Resource Status</div>
-        <div class="mf-resource-grid">
-
-          <div class="mf-resource-row" id="resGenBeds">
-            <div class="mf-resource-header">
-              <span class="mf-resource-label">🛏 General Beds</span>
-              <span class="mf-resource-status-tag ok">Optimal</span>
-            </div>
-            <div class="mf-resource-bar">
-              <div class="mf-resource-fill ok" style="width:25%"></div>
-            </div>
-            <div class="mf-resource-count"><span class="avail">5</span> / 20 available</div>
-          </div>
-
-          <div class="mf-resource-row" id="resIcuBeds">
-            <div class="mf-resource-header">
-              <span class="mf-resource-label">🏥 ICU Beds</span>
-              <span class="mf-resource-status-tag warn">Moderate</span>
-            </div>
-            <div class="mf-resource-bar">
-              <div class="mf-resource-fill warn" style="width:75%"></div>
-            </div>
-            <div class="mf-resource-count"><span class="avail">2</span> / 8 available</div>
-          </div>
-
-          <div class="mf-resource-row" id="resOperatingRooms">
-            <div class="mf-resource-header">
-              <span class="mf-resource-label">⚕ Operating Rooms</span>
-              <span class="mf-resource-status-tag warn">Moderate</span>
-            </div>
-            <div class="mf-resource-bar">
-              <div class="mf-resource-fill warn" style="width:60%"></div>
-            </div>
-            <div class="mf-resource-count"><span class="avail">2</span> / 5 available</div>
-          </div>
-
-          <div class="mf-resource-row" id="resAmbulances">
-            <div class="mf-resource-header">
-              <span class="mf-resource-label">🚑 Ambulances</span>
-              <span class="mf-resource-status-tag ok">Optimal</span>
-            </div>
-            <div class="mf-resource-bar">
-              <div class="mf-resource-fill ok" style="width:20%"></div>
-            </div>
-            <div class="mf-resource-count"><span class="avail">4</span> / 5 available</div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Operational Alerts -->
-      <div>
-        <div class="mf-section-label">Real-Time Operational Alerts</div>
-        <div class="mf-alerts-panel">
-          <div class="mf-alerts-header">
-            <span class="mf-alerts-title">Active Alerts</span>
-            <a href="/alerts" class="mf-alerts-view-all">View All Alerts →</a>
-          </div>
-          <div id="alertsListContainer">
-            <!-- Populated by JS -->
-            <div class="mf-alert-item">
-              <div class="mf-alert-dot critical"></div>
-              <div class="mf-alert-body">
-                <div class="mf-alert-row">
-                  <span class="mf-alert-name">ICU Capacity Critical</span>
-                  <span class="mf-alert-time">Just now</span>
+        <!-- System Status -->
+        <div class="chart-card">
+          <div class="chart-card-title">Operational Status</div>
+          <div class="chart-card-subtitle">Live system and simulation state</div>
+          <div class="card-body" style="padding: 0;">
+            <div style="padding:16px 0;">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-light);">
+                  <span style="font-size:12.5px;color:var(--text-secondary);font-weight:500;">Total Patients</span>
+                  <span style="font-size:14px;font-weight:700;" id="dash-total">—</span>
                 </div>
-                <div class="mf-alert-desc">ICU available beds have fallen below the configured threshold.</div>
-              </div>
-            </div>
-            <div class="mf-alert-item">
-              <div class="mf-alert-dot warning"></div>
-              <div class="mf-alert-body">
-                <div class="mf-alert-row">
-                  <span class="mf-alert-name">Clinical Staff Shortage</span>
-                  <span class="mf-alert-time">3m ago</span>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-light);">
+                  <span style="font-size:12.5px;color:var(--text-secondary);font-weight:500;">Doctors Available</span>
+                  <span style="font-size:14px;font-weight:700;" id="dash-doctors">—</span>
                 </div>
-                <div class="mf-alert-desc">Doctor or nurse coverage is below the required operational buffer.</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-light);">
+                  <span style="font-size:12.5px;color:var(--text-secondary);font-weight:500;">Nurses Available</span>
+                  <span style="font-size:14px;font-weight:700;" id="dash-nurses">—</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-light);">
+                  <span style="font-size:12.5px;color:var(--text-secondary);font-weight:500;">Blood Units</span>
+                  <span style="font-size:14px;font-weight:700;" id="dash-blood">—</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+                  <span style="font-size:12.5px;color:var(--text-secondary);font-weight:500;">Medicine Stock</span>
+                  <span style="font-size:14px;font-weight:700;" id="dash-medicine">—</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
-  </div>
 
-  <!-- ====== QUICK ACCESS ====== -->
-  <div class="mf-container mf-section">
-    <div class="mf-section-label">Quick Access</div>
+    <!-- ──────────────────────────────────────
+         PAGE: PATIENT PRIORITY QUEUE
+    ────────────────────────────────────── -->
+    <div class="page" id="page-queue">
+      <div class="page-header">
+        <h1 class="page-title">Patient Priority Queue</h1>
+        <p class="page-subtitle">Real-time queue management powered by the MEDFLOW scheduling algorithm.</p>
+      </div>
 
-    <div class="mf-quickaccess-grid">
+      <div class="queue-stats">
+        <div class="stat-card">
+          <div class="stat-card-accent accent-red"></div>
+          <div class="stat-card-label">In Queue</div>
+          <div class="stat-card-value" id="q-total">—</div>
+          <div class="stat-card-sub">Active waiting</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-accent accent-red"></div>
+          <div class="stat-card-label">Critical (5)</div>
+          <div class="stat-card-value" id="q-critical">—</div>
+          <div class="stat-card-sub">Immediate attention</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-accent accent-amber"></div>
+          <div class="stat-card-label">High Priority (4)</div>
+          <div class="stat-card-value" id="q-high">—</div>
+          <div class="stat-card-sub">Urgent care needed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-accent accent-green"></div>
+          <div class="stat-card-label">Avg Est. Wait</div>
+          <div class="stat-card-value" id="q-avg-wait">—</div>
+          <div class="stat-card-sub">minutes</div>
+        </div>
+      </div>
 
-      <a href="/queue" class="mf-qa-card">
-        <div class="mf-qa-icon-wrap">📋</div>
-        <div class="mf-qa-label">Patient Priority Queue</div>
-        <div class="mf-qa-desc">Manage and prioritize waiting patients by urgency, department and arrival time.</div>
-        <div class="mf-qa-arrow">Open Queue →</div>
-      </a>
-
-      <a href="/resources" class="mf-qa-card">
-        <div class="mf-qa-icon-wrap">📦</div>
-        <div class="mf-qa-label">Resource Management</div>
-        <div class="mf-qa-desc">Monitor and allocate hospital resources — beds, staff, ICU, operating rooms.</div>
-        <div class="mf-qa-arrow">Manage Resources →</div>
-      </a>
-
-      <a href="/inventory" class="mf-qa-card">
-        <div class="mf-qa-icon-wrap">🧬</div>
-        <div class="mf-qa-label">Inventory</div>
-        <div class="mf-qa-desc">Track blood bank units, medicine stock levels, and medical equipment availability.</div>
-        <div class="mf-qa-arrow">View Inventory →</div>
-      </a>
-
-      <a href="/analytics" class="mf-qa-card">
-        <div class="mf-qa-icon-wrap">📊</div>
-        <div class="mf-qa-label">Analytics &amp; Reports</div>
-        <div class="mf-qa-desc">Explore historical patient trends, strategy benchmarks, and operational performance.</div>
-        <div class="mf-qa-arrow">Open Analytics →</div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- Hidden chart elements for test compatibility -->
-  <canvas id="resourceUtilizationChart" style="display:none"></canvas>
-  <canvas id="strategyComparisonChart" style="display:none"></canvas>
-  <!-- Additional hidden elements for dashboard.js compatibility -->
-  <div id="kpiOverallUtil" style="display:none"></div>
-  <div id="alertCountBadge" style="display:none"></div>
-
-</main>
-
-<!-- Footer -->
-<footer class="mf-footer" style="max-width:100%;margin-top:var(--space-2xl)">
-  <div>MEDFLOW Hospital Operations Center &mdash; v2.4</div>
-  <div style="font-family:var(--font-mono);" id="footerTime">—</div>
-</footer>
-
-<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
-<script src="{{ url_for('static', filename='js/simulation.js') }}"></script>
-<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-<script>
-// ── Hero date/time ──────────────────────────────────────────────────
-function updateDateTime() {
-  const now = new Date();
-  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-  const dateStr = now.toLocaleDateString('en-GB', opts);
-  const timeStr = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-  const el = document.getElementById('heroDateTime');
-  const ft = document.getElementById('footerTime');
-  if (el) el.textContent = `${dateStr} — ${timeStr}`;
-  if (ft) ft.textContent = timeStr;
-}
-updateDateTime();
-setInterval(updateDateTime, 1000);
-
-// ── Resource status update (homepage cards) ──────────────────────────
-async function updateHomepageResources() {
-  try {
-    const res = await fetch('/api/resources');
-    if (!res.ok) return;
-    const d = await res.json();
-
-    function setResource(id, avail, total, utilPct) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const fill = el.querySelector('.mf-resource-fill');
-      const count = el.querySelector('.mf-resource-count');
-      const tag = el.querySelector('.mf-resource-status-tag');
-      const pct = Math.min(100, Math.max(3, utilPct));
-      if (fill) {
-        fill.style.width = pct + '%';
-        fill.className = 'mf-resource-fill ' + (utilPct >= 80 ? 'crit' : utilPct >= 60 ? 'warn' : 'ok');
-      }
-      if (count) count.innerHTML = `<span class="avail">${avail}</span> / ${total} available`;
-      if (tag) {
-        const s = utilPct >= 80 ? 'Critical' : utilPct >= 60 ? 'Moderate' : 'Optimal';
-        tag.textContent = s;
-        tag.className = 'mf-resource-status-tag ' + (utilPct >= 80 ? 'crit' : utilPct >= 60 ? 'warn' : 'ok');
-      }
-    }
-
-    const beds = d.general_beds || d.beds || {};
-    const icu  = d.icu_beds || d.icu || {};
-    const ors  = d.operating_rooms || d.or || {};
-    const amb  = d.ambulances || {};
-
-    setResource('resGenBeds', beds.available??5, beds.total??20, beds.utilization_percent??25);
-    setResource('resIcuBeds', icu.available??2,  icu.total??8,  icu.utilization_percent??75);
-    setResource('resOperatingRooms', ors.available??2, ors.total??5, ors.utilization_percent??60);
-    setResource('resAmbulances', amb.available??4, amb.total??5, amb.utilization_percent??20);
-  } catch(e) {}
-}
-
-// ── Staff on duty ────────────────────────────────────────────────────
-async function updateStaff() {
-  try {
-    const res = await fetch('/api/resources');
-    if (!res.ok) return;
-    const d = await res.json();
-    const doc = d.doctors || {};
-    const nur = d.nurses  || {};
-    const docEl = document.getElementById('staffDoctors');
-    const nurEl = document.getElementById('staffNurses');
-    if (docEl) docEl.textContent = doc.total ?? 10;
-    if (nurEl) nurEl.textContent = nur.total ?? 18;
-  } catch(e) {}
-}
-
-// ── KPI updates for homepage ─────────────────────────────────────────
-async function updateHomepageKPIs() {
-  try {
-    const res = await fetch('/api/metrics');
-    if (!res.ok) return;
-    const d = await res.json();
-    const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
-    set('kpiServed',   d.patients_served ?? '—');
-    set('kpiWaiting',  d.patients_waiting ?? '—');
-    set('kpiCritical', d.critical_patients ?? '—');
-    set('kpiAvgWait',  d.average_waiting_time != null ? Number(d.average_waiting_time).toFixed(1) : '—');
-    set('kpiIcuUtil',  d.icu_utilization != null ? Math.round(d.icu_utilization) + '%' : '—');
-  } catch(e) {}
-}
-
-// ── Alerts homepage ───────────────────────────────────────────────────
-async function updateHomepageAlerts() {
-  try {
-    const res = await fetch('/api/alerts');
-    if (!res.ok) return;
-    const alerts = await res.json();
-    const container = document.getElementById('alertsListContainer');
-    if (!container || !alerts.length) return;
-    const preview = alerts.slice(0, 3);
-    container.innerHTML = preview.map(a => {
-      const type = (a.type || 'info').toLowerCase();
-      const dotClass = type === 'critical' ? 'critical' : type === 'warning' ? 'warning' : 'info';
-      return `
-        <div class="mf-alert-item">
-          <div class="mf-alert-dot ${dotClass}"></div>
-          <div class="mf-alert-body">
-            <div class="mf-alert-row">
-              <span class="mf-alert-name">${a.title}</span>
-              <span class="mf-alert-time">${a.time || 'Live'}</span>
-            </div>
-            <div class="mf-alert-desc">${a.message || ''}</div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Live Queue</div>
+          <div class="filter-bar">
+            <select class="filter-select" id="queue-dept-filter" onchange="filterQueue()">
+              <option value="">All Departments</option>
+              <option>Emergency</option>
+              <option>ICU</option>
+              <option>Cardiology</option>
+              <option>Neurology</option>
+              <option>General Medicine</option>
+              <option>Gynecology</option>
+            </select>
+            <button class="btn-secondary" onclick="loadQueue()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polyline points="23,4 23,11 16,11"/><polyline points="1,20 1,13 8,13"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 11M1 13l4.64 4.36A9 9 0 0020.49 15"/></svg>
+              Refresh
+            </button>
           </div>
-        </div>`;
-    }).join('');
-  } catch(e) {}
-}
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Patient ID</th>
+                <th>Department</th>
+                <th>Urgency</th>
+                <th>Est. Wait</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="queue-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-tertiary);">Loading queue...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-// ── Bootstrap ────────────────────────────────────────────────────────
-(async () => {
-  await Promise.allSettled([
-    updateHomepageKPIs(),
-    updateStaff(),
-    updateHomepageResources(),
-    updateHomepageAlerts()
-  ]);
-  setInterval(async () => {
-    await Promise.allSettled([
-      updateHomepageKPIs(),
-      updateStaff(),
-      updateHomepageResources(),
-      updateHomepageAlerts()
-    ]);
-  }, 5000);
-})();
-</script>
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card">
+          <div class="chart-card-title">Queue by Department</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-queue-dept"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Wait Time Distribution</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-queue-wait"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────────
+         PAGE: WAIT TIME PREDICTION
+    ────────────────────────────────────── -->
+    <div class="page" id="page-wait-time">
+      <div class="page-header">
+        <h1 class="page-title">Wait Time Prediction</h1>
+        <p class="page-subtitle">Predict patient waiting times using real-time hospital conditions.</p>
+      </div>
+
+      <div class="predict-layout">
+        <!-- Input Panel -->
+        <div class="chart-card">
+          <div class="chart-card-title">Prediction Inputs</div>
+          <div class="chart-card-subtitle">Configure parameters for wait time estimation</div>
+          <div class="form-grid" style="gap:14px;">
+            <div class="form-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-group">
+                <label class="form-label" for="p-dept">Department</label>
+                <select class="form-select" id="p-dept">
+                  <option value="Emergency">Emergency</option>
+                  <option value="ICU">ICU</option>
+                  <option value="Cardiology">Cardiology</option>
+                  <option value="Neurology">Neurology</option>
+                  <option value="General Medicine">General Medicine</option>
+                  <option value="Gynecology">Gynecology</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="p-urgency">Urgency Level</label>
+                <select class="form-select" id="p-urgency">
+                  <option value="1">1 — Low</option>
+                  <option value="2">2 — Moderate</option>
+                  <option value="3">3 — Medium</option>
+                  <option value="4">4 — High Priority</option>
+                  <option value="5">5 — Critical</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-group">
+                <label class="form-label" for="p-queue-len">Queue Length</label>
+                <input type="number" class="form-input" id="p-queue-len" value="10" min="0" max="100" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="p-treat-dur">Treatment Duration (min)</label>
+                <input type="number" class="form-input" id="p-treat-dur" value="30" min="1" max="480" />
+              </div>
+            </div>
+            <div class="form-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-group">
+                <label class="form-label" for="p-bed-avail">Bed Availability</label>
+                <input type="number" class="form-input" id="p-bed-avail" value="5" min="0" max="20" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="p-icu-avail">ICU Availability</label>
+                <input type="number" class="form-input" id="p-icu-avail" value="2" min="0" max="8" />
+              </div>
+            </div>
+            <div class="form-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-group">
+                <label class="form-label" for="p-doc-avail">Doctor Availability</label>
+                <input type="number" class="form-input" id="p-doc-avail" value="3" min="0" max="20" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="p-nurse-avail">Nurse Availability</label>
+                <input type="number" class="form-input" id="p-nurse-avail" value="6" min="0" max="40" />
+              </div>
+            </div>
+            <button class="btn-primary" id="btn-predict" onclick="runPrediction()" style="width:100%;justify-content:center;padding:12px;">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="9"/><polyline points="12,7 12,12 15.5,15.5"/></svg>
+              PREDICT WAIT TIME →
+            </button>
+          </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <!-- Result Card -->
+          <div id="predict-result-wrap">
+            <div class="predict-empty">
+              <div class="predict-empty-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="9"/><polyline points="12,7 12,12 15.5,15.5"/></svg>
+              </div>
+              <p>Run a prediction to see results</p>
+            </div>
+          </div>
+
+          <!-- Contributing Factors -->
+          <div class="chart-card" id="factor-card" style="display:none;">
+            <div class="chart-card-title">Contributing Factors</div>
+            <div class="chart-card-subtitle" style="margin-bottom:12px;">Impact on predicted waiting time</div>
+            <div class="factor-bar-list" id="factor-bars"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prediction Charts -->
+      <div class="predict-charts-grid">
+        <div class="chart-card">
+          <div class="chart-card-title">Wait Time by Department</div>
+          <div class="chart-card-subtitle">Estimated averages across departments</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-predict-by-dept"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Recent Prediction Trend</div>
+          <div class="chart-card-subtitle">Last 8 predictions this session</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-predict-trend"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────────
+         PAGE: RESOURCE MANAGEMENT
+    ────────────────────────────────────── -->
+    <div class="page" id="page-resources">
+      <div class="page-header">
+        <h1 class="page-title">Resource Management</h1>
+        <p class="page-subtitle">Monitor, allocate and optimise hospital resources in real time.</p>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="resource-summary-grid">
+        <div class="resource-card">
+          <div class="resource-card-header">
+            <div class="resource-card-name">General Beds</div>
+            <span class="badge badge-medium">Moderate</span>
+          </div>
+          <div class="resource-card-count"><span id="res-beds-avail">5</span> <span style="font-size:16px;font-weight:400;color:var(--text-tertiary);">/ 20</span></div>
+          <div class="resource-card-sub">available</div>
+          <div class="resource-utilization-status">
+            <div class="util-dot util-dot-moderate"></div>
+            <span class="resource-util-label util-moderate">75% utilized</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div class="resource-card-header">
+            <div class="resource-card-name">ICU Beds</div>
+            <span class="badge badge-critical">Critical</span>
+          </div>
+          <div class="resource-card-count"><span id="res-icu-avail">2</span> <span style="font-size:16px;font-weight:400;color:var(--text-tertiary);">/ 8</span></div>
+          <div class="resource-card-sub">available</div>
+          <div class="resource-utilization-status">
+            <div class="util-dot util-dot-critical"></div>
+            <span class="resource-util-label util-critical">75% utilized</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div class="resource-card-header">
+            <div class="resource-card-name">Doctors</div>
+            <span class="badge badge-low">Optimal</span>
+          </div>
+          <div class="resource-card-count"><span id="res-doctors-avail">10</span> <span style="font-size:16px;font-weight:400;color:var(--text-tertiary);">/ 16</span></div>
+          <div class="resource-card-sub">available</div>
+          <div class="resource-utilization-status">
+            <div class="util-dot util-dot-optimal"></div>
+            <span class="resource-util-label util-optimal">38% utilized</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div class="resource-card-header">
+            <div class="resource-card-name">Nurses</div>
+            <span class="badge badge-low">Optimal</span>
+          </div>
+          <div class="resource-card-count"><span id="res-nurses-avail">18</span> <span style="font-size:16px;font-weight:400;color:var(--text-tertiary);">/ 25</span></div>
+          <div class="resource-card-sub">available</div>
+          <div class="resource-utilization-status">
+            <div class="util-dot util-dot-optimal"></div>
+            <span class="resource-util-label util-optimal">28% utilized</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div class="resource-card-header">
+            <div class="resource-card-name">Operating Rooms</div>
+            <span class="badge badge-medium">Moderate</span>
+          </div>
+          <div class="resource-card-count">2 <span style="font-size:16px;font-weight:400;color:var(--text-tertiary);">/ 5</span></div>
+          <div class="resource-card-sub">available</div>
+          <div class="resource-utilization-status">
+            <div class="util-dot util-dot-moderate"></div>
+            <span class="resource-util-label util-moderate">60% utilized</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div class="resource-card-header">
+            <div class="resource-card-name">Ambulances</div>
+            <span class="badge badge-low">Optimal</span>
+          </div>
+          <div class="resource-card-count">4 <span style="font-size:16px;font-weight:400;color:var(--text-tertiary);">/ 5</span></div>
+          <div class="resource-card-sub">available</div>
+          <div class="resource-utilization-status">
+            <div class="util-dot util-dot-optimal"></div>
+            <span class="resource-util-label util-optimal">20% utilized</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="resource-chart-grid">
+        <div class="chart-card">
+          <div class="chart-card-title">Resource Utilization</div>
+          <div class="chart-card-subtitle">Current utilization rate across all resources</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-resource-util"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Availability Trend</div>
+          <div class="chart-card-subtitle">Resource availability over the last 12 periods</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-resource-trend"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Allocation Table -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Resource Allocation by Department</div>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;">
+            <!-- General Beds -->
+            <div>
+              <div class="section-label" style="margin-bottom:12px;">General Beds</div>
+              <div class="allocation-list">
+                <div class="allocation-group">
+                  <div class="allocation-dept-row"><span class="allocation-dept-name">Emergency</span><span class="allocation-dept-count">8</span></div>
+                  <div class="allocation-dept-row"><span class="allocation-dept-name">General Medicine</span><span class="allocation-dept-count">4</span></div>
+                  <div class="allocation-dept-row"><span class="allocation-dept-name">Cardiology</span><span class="allocation-dept-count">3</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- Doctors -->
+            <div>
+              <div class="section-label" style="margin-bottom:12px;">Doctors</div>
+              <div class="allocation-list">
+                <div class="allocation-group">
+                  <div class="allocation-dept-row"><span class="allocation-dept-name">Emergency</span><span class="allocation-dept-count">3</span></div>
+                  <div class="allocation-dept-row"><span class="allocation-dept-name">ICU</span><span class="allocation-dept-count">2</span></div>
+                  <div class="allocation-dept-row"><span class="allocation-dept-name">Cardiology</span><span class="allocation-dept-count">2</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- Nurses -->
+            <div>
+              <div class="section-label" style="margin-bottom:12px;">Nurses</div>
+              <div class="allocation-list">
+                <div class="allocation-group">
+                  <div class="allocation-dept-row"><span class="allocation-dept-name">Emergency</span><span class="allocation-dept-count">6</span></div>
+                  <div class="allocation-dept-row"><span class="allocation-dept-name">ICU</span><span class="allocation-dept-count">5</span></div>
+                  <div class="allocation-dept-row"><span class="allocation-dept-name">General Medicine</span><span class="allocation-dept-count">4</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────────
+         PAGE: OPERATIONAL ALERTS
+    ────────────────────────────────────── -->
+    <div class="page" id="page-alerts">
+      <div class="page-header">
+        <h1 class="page-title">Operational Alerts</h1>
+        <p class="page-subtitle">Stay ahead of emerging hospital operational constraints.</p>
+      </div>
+
+      <div class="alerts-filter-bar">
+        <div class="alerts-tab-group">
+          <button class="alerts-tab active" data-alert-filter="active" onclick="filterAlerts(this,'active')">Active</button>
+          <button class="alerts-tab" data-alert-filter="resolved" onclick="filterAlerts(this,'resolved')">Resolved</button>
+          <button class="alerts-tab" data-alert-filter="all" onclick="filterAlerts(this,'all')">All</button>
+        </div>
+        <div class="filter-bar">
+          <select class="filter-select" id="alert-dept-filter" onchange="renderAlerts()">
+            <option value="">All Departments</option>
+            <option>Emergency</option>
+            <option>ICU</option>
+            <option>Cardiology</option>
+            <option>Neurology</option>
+            <option>General Medicine</option>
+            <option>Gynecology</option>
+            <option>Radiology</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Alert Feed</div>
+          <span id="alerts-count" class="badge badge-red" style="font-size:11px;"></span>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Alert</th>
+                <th>Department</th>
+                <th>Severity</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="alerts-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Alert Summary -->
+      <div class="chart-grid chart-grid-2" style="margin-top:0;">
+        <div class="chart-card">
+          <div class="chart-card-title">Alerts by Severity</div>
+          <div class="chart-wrapper-sm">
+            <canvas id="chart-alerts-severity"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Alerts by Department</div>
+          <div class="chart-wrapper-sm">
+            <canvas id="chart-alerts-dept"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────────
+         PAGE: INVENTORY
+    ────────────────────────────────────── -->
+    <div class="page" id="page-inventory">
+      <div class="page-header">
+        <h1 class="page-title">Inventory</h1>
+        <p class="page-subtitle">Track supplies, availability and critical shortages.</p>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="blood" onclick="switchInventoryTab(this,'blood')">Blood Bank</button>
+          <button class="tab-btn" data-tab="medicines" onclick="switchInventoryTab(this,'medicines')">Medicines</button>
+          <button class="tab-btn" data-tab="equipment" onclick="switchInventoryTab(this,'equipment')">Equipment</button>
+          <button class="tab-btn" data-tab="consumables" onclick="switchInventoryTab(this,'consumables')">Consumables</button>
+        </div>
+      </div>
+
+      <!-- Blood Bank Tab -->
+      <div class="tab-panel active" id="tab-blood">
+        <div class="inventory-total-card">
+          <div>
+            <div class="inventory-total-value" id="inv-blood-total">—</div>
+            <div class="inventory-total-label">Total Blood Units in Stock</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:8px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;">Stock Status</div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:rgba(255,255,255,0.8);">
+                <span style="width:8px;height:8px;border-radius:50%;background:#52b788;display:inline-block;"></span> In Stock (≥10)
+              </span>
+              <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:rgba(255,255,255,0.8);">
+                <span style="width:8px;height:8px;border-radius:50%;background:#fbbf24;display:inline-block;"></span> Low Stock (4–9)
+              </span>
+              <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:rgba(255,255,255,0.8);">
+                <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;"></span> Critical (&lt;4)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="blood-grid" id="blood-grid"><!-- filled by JS --></div>
+
+        <div class="inventory-chart-row">
+          <div class="chart-card">
+            <div class="chart-card-title">Blood Type Distribution</div>
+            <div class="chart-wrapper">
+              <canvas id="chart-blood-dist"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card-title">Stock Level Overview</div>
+            <div class="chart-wrapper">
+              <canvas id="chart-blood-levels"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medicines Tab -->
+      <div class="tab-panel" id="tab-medicines">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">Medicine Stock</div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr><th>Medicine</th><th>Qty Available</th><th>Min Required</th><th>Stock Bar</th><th>Status</th></tr>
+              </thead>
+              <tbody id="medicines-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Equipment Tab -->
+      <div class="tab-panel" id="tab-equipment">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">Equipment Inventory</div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr><th>Item</th><th>Available</th><th>Total</th><th>Utilization</th><th>Status</th></tr>
+              </thead>
+              <tbody id="equipment-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Consumables Tab -->
+      <div class="tab-panel" id="tab-consumables">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">Consumables Stock</div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr><th>Item</th><th>Category</th><th>Quantity</th><th>Status</th><th>Updated</th></tr>
+              </thead>
+              <tbody id="consumables-tbody">
+                <tr>
+                  <td>Syringes</td><td>Equipment</td><td>35</td>
+                  <td><span class="badge badge-in-stock">In Stock</span></td>
+                  <td style="color:var(--text-tertiary);">Just now</td>
+                </tr>
+                <tr>
+                  <td>Gloves (Box)</td><td>Consumables</td><td>70</td>
+                  <td><span class="badge badge-in-stock">In Stock</span></td>
+                  <td style="color:var(--text-tertiary);">2 hrs ago</td>
+                </tr>
+                <tr>
+                  <td>IV Sets</td><td>Equipment</td><td>22</td>
+                  <td><span class="badge badge-low-stock">Low Stock</span></td>
+                  <td style="color:var(--text-tertiary);">4 hrs ago</td>
+                </tr>
+                <tr>
+                  <td>Bandages</td><td>Consumables</td><td>150</td>
+                  <td><span class="badge badge-in-stock">In Stock</span></td>
+                  <td style="color:var(--text-tertiary);">1 hr ago</td>
+                </tr>
+                <tr>
+                  <td>Surgical Masks</td><td>Consumables</td><td>8</td>
+                  <td><span class="badge badge-critical-stock">Critical</span></td>
+                  <td style="color:var(--text-tertiary);">30 mins ago</td>
+                </tr>
+                <tr>
+                  <td>Oxygen Masks</td><td>Equipment</td><td>14</td>
+                  <td><span class="badge badge-low-stock">Low Stock</span></td>
+                  <td style="color:var(--text-tertiary);">1 hr ago</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────────
+         PAGE: ANALYTICS & REPORTS
+    ────────────────────────────────────── -->
+    <div class="page" id="page-analytics">
+      <div class="page-header">
+        <h1 class="page-title">Analytics &amp; Reports</h1>
+        <p class="page-subtitle">Turn hospital data into operational insights.</p>
+      </div>
+
+      <div class="analytics-filter">
+        <button class="time-filter-btn active" onclick="setTimeFilter(this,'today')">Today</button>
+        <button class="time-filter-btn" onclick="setTimeFilter(this,'week')">This Week</button>
+        <button class="time-filter-btn" onclick="setTimeFilter(this,'month')">This Month</button>
+      </div>
+
+      <!-- Patient Flow -->
+      <div class="chart-card mb-24" style="margin-bottom:18px;">
+        <div class="chart-card-title">Patient Flow Over Time</div>
+        <div class="chart-card-subtitle">Admissions and active patient count across simulation steps</div>
+        <div class="chart-wrapper-xl">
+          <canvas id="chart-patient-flow"></canvas>
+        </div>
+      </div>
+
+      <div class="analytics-grid-main">
+        <div class="chart-card">
+          <div class="chart-card-title">Queue Length Dynamics</div>
+          <div class="chart-card-subtitle">Queue evolution across simulation steps</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-queue-dynamics"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Patient / Case Distribution</div>
+          <div class="chart-card-subtitle">Breakdown by department</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-case-dist"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-grid-main" style="margin-bottom:18px;">
+        <div class="chart-card">
+          <div class="chart-card-title">Wait Time by Department</div>
+          <div class="chart-card-subtitle">Average estimated waiting time per department</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-wait-by-dept"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Resource Utilization</div>
+          <div class="chart-card-subtitle">Utilization percentage across all resource types</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-res-util-analytics"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-grid-main" style="margin-bottom:0;">
+        <div class="chart-card">
+          <div class="chart-card-title">Scheduling Strategy Benchmark</div>
+          <div class="chart-card-subtitle">Average waiting time comparison across algorithms</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-strategy-bench"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Admissions vs Discharges</div>
+          <div class="chart-card-subtitle">Patient throughput over time</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-adm-dis"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────────
+         PAGE: AI OPERATIONS INSIGHTS
+    ────────────────────────────────────── -->
+    <div class="page" id="page-ai-insights">
+      <div class="page-header">
+        <h1 class="page-title">AI Operations Insights</h1>
+        <p class="page-subtitle">Turn real-time hospital data into actionable operational insights.</p>
+      </div>
+
+      <div class="ai-layout">
+        <!-- Main insight card -->
+        <div class="ai-insight-card">
+          <div class="ai-generate-header">
+            <div class="ai-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m1.636-6.364l.707.707M12 21v-1M7.05 7.05l-.707-.707M16.95 7.05l.707-.707M7.05 16.95l-.707.707M16.95 16.95l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+            </div>
+            <div>
+              <div class="ai-generate-label">Operational Intelligence</div>
+              <div class="ai-generate-sub">Powered by hospital metrics analysis</div>
+            </div>
+          </div>
+
+          <div class="ai-result-area empty" id="ai-result-text">
+            Click "Generate Insight" to analyse current hospital conditions and receive targeted operational recommendations.
+          </div>
+
+          <button class="btn-primary" id="btn-generate-insight" onclick="generateAIInsight()" style="margin-bottom:24px;">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Generate Insight
+          </button>
+
+          <div class="section-label">Key Signals</div>
+          <div class="ai-signal-grid">
+            <div class="ai-signal-card">
+              <div class="ai-signal-label">ICU Utilization</div>
+              <div class="ai-signal-value" id="ai-icu-util">—</div>
+              <div class="ai-signal-sub">of 8 beds</div>
+            </div>
+            <div class="ai-signal-card">
+              <div class="ai-signal-label">Avg Waiting Time</div>
+              <div class="ai-signal-value" id="ai-avg-wait">—</div>
+              <div class="ai-signal-sub">minutes</div>
+            </div>
+            <div class="ai-signal-card">
+              <div class="ai-signal-label">Patients Waiting</div>
+              <div class="ai-signal-value" id="ai-waiting">—</div>
+              <div class="ai-signal-sub">pending allocation</div>
+            </div>
+            <div class="ai-signal-card">
+              <div class="ai-signal-label">Staff Availability</div>
+              <div class="ai-signal-value" id="ai-staff">—</div>
+              <div class="ai-signal-sub" id="ai-staff-sub">doctors + nurses</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions sidebar -->
+        <div class="ai-actions-card">
+          <div class="chart-card-title">Recommended Actions</div>
+          <div class="chart-card-subtitle" style="margin-bottom:0;">Based on current operational data</div>
+          <div class="ai-action-list" id="ai-action-list">
+            <div class="ai-action-item">
+              <div class="ai-action-dot"></div>
+              Review ICU bed allocation and consider adding surge capacity
+            </div>
+            <div class="ai-action-item">
+              <div class="ai-action-dot"></div>
+              Monitor Emergency department admissions rate closely
+            </div>
+            <div class="ai-action-item">
+              <div class="ai-action-dot"></div>
+              Review nurse availability during peak hours
+            </div>
+            <div class="ai-action-item">
+              <div class="ai-action-dot"></div>
+              Assess blood bank stock for high-demand groups (O+, A+)
+            </div>
+            <div class="ai-action-item">
+              <div class="ai-action-dot"></div>
+              Evaluate patient discharge rate to reduce queue pressure
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="chart-card-title" style="margin-bottom:12px;">Source</div>
+          <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--neutral-50);border:1px solid var(--border-light);border-radius:var(--radius-sm);">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:14px;height:14px;stroke:var(--text-tertiary);flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
+            <span style="font-size:12px;color:var(--text-secondary);" id="ai-source-label">No insight generated yet</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app-shell -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="/static/js/charts.js"></script>
+<script src="/static/js/dashboard.js"></script>
+<script src="/static/js/simulation.js"></script>
 </body>
 </html>

@@ -341,359 +341,322 @@ function renderQueueTable(queue) {
             ${status}
           </span>
         </td>
+/* ============================================================
+   MEDFLOW — Dashboard & Routing (dashboard.js)
+   SPA router, API layer, dashboard logic, queue logic
+   ============================================================ */
+
+'use strict';
+
+// ── State ─────────────────────────────────────────────────────
+const APP = {
+  patients: [],
+  queue: [],
+  resources: {},
+  metrics: {},
+  currentPage: 'dashboard',
+};
+
+// ── API Layer ─────────────────────────────────────────────────
+async function api(path, opts = {}) {
+  try {
+    const res = await fetch(path, opts);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.warn(`[MEDFLOW API] ${path}`, e.message);
+    return null;
+  }
+}
+
+async function fetchMetrics()   { return await api('/api/metrics'); }
+async function fetchPatients()  { return await api('/api/patients'); }
+async function fetchQueue()     { return await api('/api/queue'); }
+async function fetchResources() { return await api('/api/resources'); }
+
+// ── Toast ─────────────────────────────────────────────────────
+function showToast(msg, duration = 2800) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ── Clock ─────────────────────────────────────────────────────
+function startClock() {
+  const el = document.getElementById('header-clock');
+  if (!el) return;
+  function tick() {
+    const now = new Date();
+    el.textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+  tick();
+  setInterval(tick, 30000);
+}
+
+// ── Page Router ───────────────────────────────────────────────
+const PAGE_META = {
+  dashboard:   { title: 'Dashboard',              subtitle: 'Real-time hospital operations overview' },
+  queue:       { title: 'Patient Priority Queue', subtitle: 'Live queue managed by the MEDFLOW scheduling algorithm' },
+  'wait-time': { title: 'Wait Time Prediction',   subtitle: 'Predict patient waiting times using real-time hospital conditions' },
+  resources:   { title: 'Resource Management',    subtitle: 'Monitor, allocate and optimise hospital resources in real time' },
+  alerts:      { title: 'Operational Alerts',     subtitle: 'Stay ahead of emerging hospital operational constraints' },
+  inventory:   { title: 'Inventory',              subtitle: 'Track supplies, availability and critical shortages' },
+  analytics:   { title: 'Analytics & Reports',    subtitle: 'Turn hospital data into operational insights' },
+  'ai-insights':{ title: 'AI Operations Insights',subtitle: 'Turn real-time hospital data into actionable operational insights' },
+};
+
+function navigateTo(page) {
+  if (APP.currentPage === page) return;
+  APP.currentPage = page;
+
+  // Update pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(`page-${page}`);
+  if (target) target.classList.add('active');
+
+  // Update nav items
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navItem = document.getElementById(`nav-${page}`);
+  if (navItem) navItem.classList.add('active');
+
+  // Update header
+  const meta = PAGE_META[page] || {};
+  const titleEl = document.getElementById('header-title');
+  const subEl   = document.getElementById('header-subtitle');
+  if (titleEl) titleEl.textContent = meta.title || page;
+  if (subEl)   subEl.textContent   = meta.subtitle || '';
+
+  // Show/hide run simulation button
+  const btn = document.getElementById('btn-run-simulation');
+  if (btn) btn.style.display = page === 'dashboard' ? '' : 'none';
+
+  // Trigger page load
+  onPageLoad(page);
+}
+
+function onPageLoad(page) {
+  switch (page) {
+    case 'dashboard':   loadDashboard(); break;
+    case 'queue':       loadQueue(); break;
+    case 'resources':   loadResourceCharts(); break;
+    case 'alerts':      loadAlerts(); break;
+    case 'inventory':   loadInventory(); break;
+    case 'analytics':   loadAnalytics(); break;
+    case 'ai-insights': loadAISignals(); break;
+    case 'wait-time':
+      initChartPredictByDept('chart-predict-by-dept');
+      initChartPredictTrend('chart-predict-trend');
+      break;
+  }
+}
+
+// ── Nav click bindings ────────────────────────────────────────
+function bindNav() {
+  document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+    item.addEventListener('click', () => navigateTo(item.dataset.page));
+  });
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+async function loadDashboard() {
+  const [metrics, patients, resources] = await Promise.all([
+    fetchMetrics(), fetchPatients(), fetchResources(),
+  ]);
+
+  if (metrics) {
+    APP.metrics = metrics;
+    setText('dash-waiting',   metrics.waiting_patients ?? '—');
+    setText('dash-wait-time', metrics.average_waiting_time != null ? metrics.average_waiting_time.toFixed(1) : '—');
+    setText('dash-beds',      metrics.beds_available ?? '—');
+    setText('dash-icu',       metrics.icu_available ?? '—');
+    setText('dash-total',     metrics.total_patients ?? '—');
+    setText('dash-doctors',   metrics.doctors_available ?? '—');
+    setText('dash-nurses',    metrics.nurses_available ?? '—');
+    setText('dash-blood',     `${metrics.blood_units_available ?? '—'} units`);
+    setText('dash-medicine',  `${metrics.medicine_stock ?? '—'} items`);
+  }
+
+  if (patients) {
+    APP.patients = patients;
+    initChartDeptQueue('chart-dept-queue', patients);
+    initChartUrgencyMix('chart-urgency-mix', patients);
+  }
+
+  if (resources) {
+    APP.resources = resources;
+    initChartResourceSnapshot('chart-resource-snapshot', resources);
+  }
+}
+
+// ── QUEUE ─────────────────────────────────────────────────────
+async function loadQueue() {
+  const queueData = await fetchQueue();
+  if (!queueData) return;
+  APP.queue = queueData;
+
+  // Stats
+  const total = queueData.length;
+  const critical = queueData.filter(p => p.urgency === 5).length;
+  const high     = queueData.filter(p => p.urgency === 4).length;
+  const avgWait  = total > 0
+    ? (queueData.reduce((s, p) => s + (p.estimated_waiting_time || 0), 0) / total).toFixed(1)
+    : '0';
+
+  setText('q-total',    total);
+  setText('q-critical', critical);
+  setText('q-high',     high);
+  setText('q-avg-wait', avgWait);
+
+  renderQueueTable(queueData);
+
+  initChartQueueDept('chart-queue-dept', queueData);
+  initChartQueueWait('chart-queue-wait', queueData);
+}
+
+function renderQueueTable(data) {
+  const deptFilter = document.getElementById('queue-dept-filter')?.value || '';
+  const filtered = deptFilter ? data.filter(p => p.department === deptFilter) : data;
+
+  const tbody = document.getElementById('queue-tbody');
+  if (!tbody) return;
+
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-tertiary);">No patients in queue</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((p, idx) => {
+    const urgencyColor = {1:'green',2:'green',3:'medium',4:'high',5:'critical'}[p.urgency] || 'medium';
+    const urgencyLabel = {1:'Low',2:'Moderate',3:'Medium',4:'High',5:'Critical'}[p.urgency] || p.urgency;
+    const statusClass  = p.status === 'allocated' ? 'badge-allocated' : 'badge-waiting';
+
+    return `
+      <tr class="alert-row">
+        <td style="font-weight:600;color:var(--text-tertiary);">${idx + 1}</td>
+        <td style="font-weight:600;">P-${String(p.patient_id).padStart(3,'0')}</td>
+        <td>${p.department}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="badge badge-${urgencyColor}">${urgencyLabel}</span>
+            <span style="font-size:11px;color:var(--text-tertiary);">L${p.urgency}</span>
+          </div>
+        </td>
+        <td style="font-weight:600;">${p.estimated_waiting_time ?? '—'} min</td>
+        <td><span class="badge ${statusClass}">${p.status}</span></td>
       </tr>
     `;
   }).join('');
 }
 
-function filterQueueTable() {
-  const query = (document.getElementById('queueSearchInput')?.value || '').toLowerCase().trim();
-  const dept = (document.getElementById('queueDeptFilter')?.value || '').toLowerCase().trim();
-
-  const rows = document.querySelectorAll('#queueTableBody tr');
-  rows.forEach(row => {
-    const rowDept = row.getAttribute('data-dept') || '';
-    const rowSearch = row.getAttribute('data-search') || '';
-
-    const matchesSearch = !query || rowSearch.includes(query);
-    const matchesDept = !dept || rowDept === dept;
-
-    row.style.display = (matchesSearch && matchesDept) ? '' : 'none';
-  });
+function filterQueue() {
+  renderQueueTable(APP.queue);
 }
 
-/**
- * 6. Inventory Dashboard
- * Blood Bank: GET /api/blood-bank
- */
-async function fetchBloodBank() {
-  try {
-    const res = await fetch('/api/blood-bank');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-    const grid = document.getElementById('bloodBankGrid');
-    if (!grid) return;
-
-    grid.innerHTML = bloodTypes.map(type => {
-      const units = data[type] ?? (data.inventory ? data.inventory[type] : 12);
-      const isLow = units < 6;
-      return `
-        <div class="blood-card" style="${isLow ? 'border-color: rgba(239, 68, 68, 0.5);' : ''}">
-          <div class="blood-type">${type}</div>
-          <div class="blood-units" style="${isLow ? 'color: #f87171;' : ''}">${units}</div>
-          <div class="blood-label">${isLow ? 'CRITICAL' : 'Units'}</div>
-        </div>
-      `;
-    }).join('');
-  } catch (err) {
-    console.debug('Blood bank API fallback:', err);
+// ── SIMULATION ────────────────────────────────────────────────
+async function runSimulation() {
+  const btn = document.getElementById('btn-run-simulation');
+  if (btn) {
+    btn.innerHTML = '<span class="loading-spinner"></span> Running...';
+    btn.disabled = true;
   }
-}
 
-/**
- * Medicines: GET /api/medicines
- */
-async function fetchMedicines() {
-  try {
-    const res = await fetch('/api/medicines');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    const tbody = document.getElementById('medicinesTableBody');
-    if (!tbody) return;
-
-    // Normalize medicine list
-    const items = Array.isArray(data) ? data : (data.medicines || [
-      { medicine_name: 'Paracetamol', quantity: 80, minimum_required: 20, status: 'NORMAL' },
-      { medicine_name: 'Painkillers', quantity: 60, minimum_required: 15, status: 'NORMAL' },
-      { medicine_name: 'Antibiotics', quantity: 18, minimum_required: 20, status: 'LOW' },
-      { medicine_name: 'Anesthetics', quantity: 8, minimum_required: 10, status: 'CRITICAL' },
-      { medicine_name: 'IV Fluids', quantity: 120, minimum_required: 30, status: 'NORMAL' }
-    ]);
-
-    tbody.innerHTML = items.map(m => {
-      const name = m.medicine_name || m.name;
-      const qty = m.quantity ?? m.available ?? 0;
-      const min = m.minimum_required ?? 15;
-      let status = m.status;
-      if (!status) {
-        if (qty === 0) status = 'OUT OF STOCK';
-        else if (qty < min * 0.5) status = 'CRITICAL';
-        else if (qty < min) status = 'LOW';
-        else status = 'NORMAL';
-      }
-
-      const badgeClass = status === 'OUT OF STOCK' || status === 'CRITICAL' ? 'badge-red' :
-                         status === 'LOW' ? 'badge-amber' : 'badge-green';
-
-      return `
-        <tr>
-          <td style="font-weight: 600; color: var(--text-primary);">${name}</td>
-          <td style="font-family: var(--font-mono);">${qty}</td>
-          <td><span class="badge-pill ${badgeClass}">${status}</span></td>
-        </tr>
-      `;
-    }).join('');
-  } catch (err) {
-    console.debug('Medicines API fallback:', err);
-  }
-}
-
-/**
- * Equipment: GET /api/equipment
- */
-async function fetchEquipment() {
-  try {
-    const res = await fetch('/api/equipment');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    const tbody = document.getElementById('equipmentTableBody');
-    if (!tbody) return;
-
-    const items = Array.isArray(data) ? data : (data.equipment || [
-      { equipment_name: 'Ventilator', available_quantity: 4, total_quantity: 10, in_use: 6 },
-      { equipment_name: 'Heart Monitor', available_quantity: 12, total_quantity: 25, in_use: 13 },
-      { equipment_name: 'Defibrillator', available_quantity: 3, total_quantity: 8, in_use: 5 },
-      { equipment_name: 'Syringes', available_quantity: 350, total_quantity: 500, in_use: 150 },
-      { equipment_name: 'IV Sets', available_quantity: 80, total_quantity: 100, in_use: 20 }
-    ]);
-
-    tbody.innerHTML = items.map(eq => {
-      const name = eq.equipment_name || eq.name;
-      const total = eq.total_quantity ?? eq.total ?? 10;
-      const avail = eq.available_quantity ?? eq.available ?? 5;
-      const inUse = eq.in_use ?? Math.max(0, total - avail);
-
-      return `
-        <tr>
-          <td style="font-weight: 600; color: var(--text-primary);">${name}</td>
-          <td style="font-family: var(--font-mono); color: var(--accent-emerald);">${avail}</td>
-          <td style="font-family: var(--font-mono); color: var(--accent-amber);">${inUse}</td>
-          <td style="font-family: var(--font-mono);">${total}</td>
-        </tr>
-      `;
-    }).join('');
-  } catch (err) {
-    console.debug('Equipment API fallback:', err);
-  }
-}
-
-/**
- * 7. Alerts Panel - GET /api/alerts
- */
-async function fetchAlerts() {
-  try {
-    const res = await fetch('/api/alerts');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    const container = document.getElementById('alertsListContainer');
-    const alertCountBadge = document.getElementById('alertCountBadge');
-    if (!container) return;
-
-    const alerts = Array.isArray(data) ? data : (data.alerts || [
-      { type: 'critical', title: 'ICU Capacity Warning', message: 'ICU occupancy reached 85%. Triage queue redirection advised.', time: 'Just now' },
-      { type: 'warning', title: 'Staff Shortage', message: 'Cardiology on-call coverage under minimum buffer.', time: '4m ago' },
-      { type: 'info', title: 'Medication Restock', message: 'Antibiotics delivery arrived and verified by pharmacy.', time: '12m ago' }
-    ]);
-
-    if (alertCountBadge) {
-      alertCountBadge.textContent = `${alerts.length} Alerts`;
-      alertCountBadge.className = alerts.some(a => a.type === 'critical') ? 'kpi-badge badge-red' : 'kpi-badge badge-amber';
-    }
-
-    if (alerts.length === 0) {
-      container.innerHTML = `
-        <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
-          No active alerts. All operations within normal limits.
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = alerts.map(a => {
-      const type = (a.type || a.severity || 'info').toLowerCase();
-      const icon = type === 'critical' ? '⚠️' : type === 'warning' ? '⚡' : 'ℹ️';
-      return `
-        <div class="alert-item ${type}">
-          <div class="alert-icon">${icon}</div>
-          <div class="alert-content">
-            <div class="alert-title-row">
-              <span class="alert-title">${a.title}</span>
-              <span class="alert-time">${a.time || 'Live'}</span>
-            </div>
-            <div class="alert-desc">${a.message || a.description}</div>
-          </div>
-        </div>
-      `;
-    }).join('');
-  } catch (err) {
-    console.debug('Alerts API fallback:', err);
-  }
-}
-
-/**
- * Strategy Comparison - GET /api/strategies/compare
- */
-async function fetchStrategyComparison() {
-  try {
-    const res = await fetch('/api/strategies/compare');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    if (typeof updateStrategyChartData === 'function') {
-      updateStrategyChartData(data);
-    }
-  } catch (err) {
-    console.debug('Strategy compare API fallback:', err);
-  }
-}
-
-/**
- * 10. ML Waiting Time Prediction - POST /api/ml/predict-wait
- */
-async function handlePredictWaitTime() {
-  const btn = document.getElementById('predictWaitBtn');
-  const resultDisplay = document.getElementById('mlPredictedWaitDisplay');
-
-  const payload = {
-    department: document.getElementById('mlDeptInput')?.value || 'Emergency',
-    urgency: parseInt(document.getElementById('mlUrgencyInput')?.value || '4', 10),
-    queue_length: parseInt(document.getElementById('mlQueueLengthInput')?.value || '10', 10),
-    icu_availability: parseInt(document.getElementById('mlIcuAvailInput')?.value || '2', 10),
-    bed_availability: parseInt(document.getElementById('mlBedAvailInput')?.value || '4', 10),
-    doctor_availability: parseInt(document.getElementById('mlDoctorAvailInput')?.value || '3', 10),
-    nurse_availability: parseInt(document.getElementById('mlNurseAvailInput')?.value || '5', 10),
-    treatment_duration: parseInt(document.getElementById('mlTreatmentDurInput')?.value || '30', 10)
-  };
+  const result = await api('/api/simulation/start', { method: 'POST', headers: {'Content-Type':'application/json'} });
 
   if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Predicting...';
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+      Run Simulation
+    `;
+    btn.disabled = false;
   }
 
-  try {
-    const response = await fetch('/api/ml/predict-wait', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-    if (data.success) {
-      const waitTime = data.predicted_waiting_time ?? 18.6;
-      if (resultDisplay) {
-        resultDisplay.textContent = `${Number(waitTime).toFixed(1)} mins`;
-      }
-    } else {
-      console.warn('ML Prediction API returned error:', data.error);
-      // Heuristic fallback
-      const fallbackWait = Math.max(5, (payload.urgency * 4) + (payload.queue_length * 1.5) - (payload.doctor_availability * 2)).toFixed(1);
-      if (resultDisplay) resultDisplay.textContent = `${fallbackWait} mins`;
-    }
-  } catch (err) {
-    console.error('Error invoking ML prediction:', err);
-    if (resultDisplay) resultDisplay.textContent = '18.6 mins';
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '⚡ Predict Wait Time';
-    }
+  if (result?.success) {
+    showToast('✓ Simulation complete — data updated');
+    await loadDashboard();
+  } else {
+    showToast('⚠ Simulation encountered an issue');
   }
 }
 
-function syncFormWithHospitalState() {
-  if (currentMetricsCache) {
-    const queueInput = document.getElementById('mlQueueLengthInput');
-    const bedInput = document.getElementById('mlBedAvailInput');
-    const docInput = document.getElementById('mlDoctorAvailInput');
-    const nurseInput = document.getElementById('mlNurseAvailInput');
-    const icuInput = document.getElementById('mlIcuAvailInput');
+// ── RESOURCE CHARTS ───────────────────────────────────────────
+async function loadResourceCharts() {
+  const resources = await fetchResources();
+  if (resources) APP.resources = resources;
 
-    if (queueInput && currentMetricsCache.waiting_patients != null) queueInput.value = currentMetricsCache.waiting_patients;
-    if (bedInput && currentMetricsCache.beds_available != null) bedInput.value = currentMetricsCache.beds_available;
-    if (docInput && currentMetricsCache.doctors_available != null) docInput.value = currentMetricsCache.doctors_available;
-    if (nurseInput && currentMetricsCache.nurses_available != null) nurseInput.value = currentMetricsCache.nurses_available;
-    if (icuInput && currentMetricsCache.icu_available != null) icuInput.value = currentMetricsCache.icu_available;
-  }
-  handlePredictWaitTime();
-}
-
-/**
- * 11. Hugging Face AI Operations Insight - POST /api/ai/explain
- */
-async function handleGenerateAiInsight() {
-  const btn = document.getElementById('generateAiExplainBtn');
-  const quoteEl = document.getElementById('aiExplainQuote');
-  const metaSourceEl = document.getElementById('aiExplainSource');
-
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Analyzing Operations...';
+  // Update live stats from API if available
+  if (resources) {
+    setText('res-beds-avail',    resources.beds?.available ?? 5);
+    setText('res-icu-avail',     resources.icu?.available ?? 2);
+    setText('res-doctors-avail', resources.doctors?.available ?? 10);
+    setText('res-nurses-avail',  resources.nurses?.available ?? 18);
   }
 
-  // Gather current hospital state for explanation prompt
-  const payload = {
-    waiting_patients: currentMetricsCache?.waiting_patients ?? 18,
-    average_waiting_time: currentMetricsCache?.average_waiting_time ?? 42,
-    beds_available: currentMetricsCache?.beds_available ?? 3,
-    doctors_available: currentMetricsCache?.doctors_available ?? 2,
-    nurses_available: currentMetricsCache?.nurses_available ?? 4,
-    icu_available: currentMetricsCache?.icu_available ?? 1,
-    blood_units: currentMetricsCache?.blood_units ?? 8,
-    medicine_stock: currentMetricsCache?.medicine_stock ?? 64,
-    highest_queue_department: 'Emergency'
-  };
+  initChartResourceUtil('chart-resource-util');
+  initChartResourceTrend('chart-resource-trend');
+}
 
-  try {
-    const response = await fetch('/api/ai/explain', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+// ── ANALYTICS ─────────────────────────────────────────────────
+async function loadAnalytics() {
+  const [patients, queueData, metrics] = await Promise.all([
+    fetchPatients(), fetchQueue(), fetchMetrics(),
+  ]);
 
-    const data = await response.json();
-    if (data.success) {
-      const explanation = data.explanation || 'Operational bottleneck detected in Emergency. ICU capacity constraint is currently elevating patient wait times.';
-      if (quoteEl) {
-        quoteEl.textContent = `"${explanation}"`;
-      }
-      if (metaSourceEl) {
-        const sourceName = data.source === 'huggingface' ? 'Hugging Face Inference (Phi-3-mini)' : 'MEDFLOW Operational Analytics Engine';
-        metaSourceEl.textContent = `Source: ${sourceName}`;
-      }
-    } else {
-      throw new Error(data.error || 'Failed explanation');
-    }
-  } catch (err) {
-    console.warn('AI Explanation error, showing operations insight:', err);
-    if (quoteEl) {
-      quoteEl.textContent = '"ICU capacity is currently the primary operational bottleneck. High ICU utilization may increase patient waiting time. Recommendation: Prioritize bed turnover and dispatch acute triage to step-down wards."';
-    }
-    if (metaSourceEl) {
-      metaSourceEl.textContent = 'Source: MEDFLOW Operations Core (Fallback)';
-    }
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '🤖 Generate Insight';
-    }
+  if (patients) {
+    initChartPatientFlow('chart-patient-flow', patients);
+    initChartCaseDist('chart-case-dist', patients);
+    initChartAdmDis('chart-adm-dis', patients.length);
   }
+
+  initChartQueueDynamics('chart-queue-dynamics');
+  initChartWaitByDept('chart-wait-by-dept', queueData || []);
+  initChartResUtilAnalytics('chart-res-util-analytics');
+  initChartStrategyBench('chart-strategy-bench');
 }
 
-/**
- * Utility: Animated counter transition
- */
-function updateAnimatedCounter(elementId, targetValue) {
-  const el = document.getElementById(elementId);
-  if (!el) return;
-  el.textContent = targetValue;
+// ── TIME FILTER (analytics) ───────────────────────────────────
+function setTimeFilter(btn, _range) {
+  document.querySelectorAll('.time-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Re-render with same data (in a full implementation you'd fetch date-ranged data)
+  loadAnalytics();
 }
 
-// Export functions to global scope
-window.loadDashboard = loadDashboard;
-window.handlePredictWaitTime = handlePredictWaitTime;
-window.handleGenerateAiInsight = handleGenerateAiInsight;
+// ── AI SIGNALS ────────────────────────────────────────────────
+async function loadAISignals() {
+  const metrics = await fetchMetrics();
+  if (!metrics) return;
+  APP.metrics = metrics;
+
+  const icuUsed = (8 - (metrics.icu_available ?? 2));
+  const icuPct  = Math.round((icuUsed / 8) * 100);
+
+  setText('ai-icu-util',  `${icuPct}%`);
+  setText('ai-avg-wait',  metrics.average_waiting_time != null ? metrics.average_waiting_time.toFixed(1) : '—');
+  setText('ai-waiting',   metrics.waiting_patients ?? '—');
+
+  const staffCount = (metrics.doctors_available ?? 0) + (metrics.nurses_available ?? 0);
+  const staffLabel = staffCount > 20 ? 'Optimal' : staffCount > 10 ? 'Adequate' : 'Constrained';
+  setText('ai-staff',     staffLabel);
+  setText('ai-staff-sub', `${metrics.doctors_available ?? '—'} docs · ${metrics.nurses_available ?? '—'} nurses`);
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// ── Init ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  bindNav();
+  startClock();
+
+  // Wire up simulation button
+  const simBtn = document.getElementById('btn-run-simulation');
+  if (simBtn) simBtn.addEventListener('click', runSimulation);
+
+  // Load dashboard
+  loadDashboard();
+});
