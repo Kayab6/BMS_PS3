@@ -356,6 +356,8 @@ function renderQueueTable(queue) {
 const APP = {
   patients: [],
   queue: [],
+  alerts: [],
+  alertFilter: 'active',
   resources: {},
   metrics: {},
   currentPage: 'dashboard',
@@ -601,6 +603,125 @@ async function loadResourceCharts() {
   initChartResourceTrend('chart-resource-trend');
 }
 
+// ── ALERTS ───────────────────────────────────────────────────
+async function loadAlerts() {
+  const data = await api('/api/alerts');
+  APP.alerts = Array.isArray(data) ? data : [];
+  renderAlerts();
+  if (typeof initChartAlertsSeverity === 'function') initChartAlertsSeverity('chart-alerts-severity', APP.alerts);
+  if (typeof initChartAlertsDept === 'function') initChartAlertsDept('chart-alerts-dept', APP.alerts);
+}
+
+// ── INVENTORY ────────────────────────────────────────────────
+async function loadInventory() {
+  const [blood, medicines, equipment] = await Promise.all([
+    api('/api/blood-bank'),
+    api('/api/medicines'),
+    api('/api/equipment'),
+  ]);
+  if (blood) renderBloodInventory(blood);
+  if (medicines) renderMedicineInventory(medicines);
+  if (equipment) {
+    renderEquipmentInventory(equipment);
+    renderConsumablesInventory(equipment);
+  }
+}
+
+function switchInventoryTab(button, tabName) {
+  document.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+  if (button) button.classList.add('active');
+  document.getElementById(`tab-${tabName}`)?.classList.add('active');
+  if (tabName === 'inventory') loadInventory();
+}
+
+function stockBadge(status) {
+  const normalized = String(status || '').toUpperCase();
+  const label = normalized === 'NORMAL' ? 'In Stock' : normalized.replaceAll('_', ' ');
+  const className = normalized === 'NORMAL' ? 'badge-in-stock' : normalized === 'LOW' ? 'badge-low-stock' : 'badge-critical-stock';
+  return `<span class="badge ${className}">${label}</span>`;
+}
+
+function renderBloodInventory(data) {
+  const entries = Object.entries(data).map(([blood_group, units_available]) => ({blood_group, units_available}));
+  setText('inv-blood-total', entries.reduce((sum, item) => sum + item.units_available, 0));
+  const grid = document.getElementById('blood-grid');
+  if (grid) {
+    grid.innerHTML = entries.map(item => {
+      const status = item.units_available < 4 ? 'Critical' : item.units_available < 10 ? 'Low' : 'In Stock';
+      return `<div class="blood-card"><div class="blood-group">${item.blood_group}</div><div class="blood-units">${item.units_available}</div><div class="blood-status">${status}</div></div>`;
+    }).join('');
+  }
+  if (typeof initChartBloodDist === 'function') initChartBloodDist('chart-blood-dist', entries);
+  if (typeof initChartBloodLevels === 'function') initChartBloodLevels('chart-blood-levels', entries);
+}
+
+function renderMedicineInventory(items) {
+  const tbody = document.getElementById('medicines-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = items.map(item => {
+    const ratio = item.minimum_required ? Math.min(100, (item.quantity / item.minimum_required) * 100) : 100;
+    return `<tr><td>${item.medicine_name}</td><td>${item.quantity}</td><td>${item.minimum_required}</td><td><div class="progress-bar"><div class="progress-fill status-good" style="width:${ratio}%"></div></div></td><td>${stockBadge(item.status)}</td></tr>`;
+  }).join('');
+}
+
+function renderEquipmentInventory(items) {
+  const tbody = document.getElementById('equipment-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = items.map(item => {
+    const utilization = item.total_quantity ? Math.round((item.in_use / item.total_quantity) * 100) : 0;
+    const status = utilization >= 80 ? 'Critical' : utilization >= 60 ? 'Low' : 'In Stock';
+    return `<tr><td>${item.equipment_name}</td><td>${item.available_quantity}</td><td>${item.total_quantity}</td><td>${utilization}%</td><td>${stockBadge(status === 'In Stock' ? 'NORMAL' : status === 'Low' ? 'LOW' : 'CRITICAL')}</td></tr>`;
+  }).join('');
+}
+
+function renderConsumablesInventory(items) {
+  const tbody = document.getElementById('consumables-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = items.map(item => {
+    const status = item.available_quantity <= item.total_quantity * 0.2 ? 'CRITICAL' : item.available_quantity <= item.total_quantity * 0.5 ? 'LOW' : 'NORMAL';
+    return `<tr><td>${item.equipment_name}</td><td>Equipment inventory</td><td>${item.available_quantity}</td><td>${stockBadge(status)}</td><td style="color:var(--text-tertiary);">Live</td></tr>`;
+  }).join('');
+}
+
+function filterAlerts(button, filter) {
+  APP.alertFilter = filter;
+  document.querySelectorAll('.alerts-tab').forEach(tab => tab.classList.remove('active'));
+  if (button) button.classList.add('active');
+  renderAlerts();
+}
+
+function renderAlerts() {
+  const tbody = document.getElementById('alerts-tbody');
+  if (!tbody) return;
+  const department = document.getElementById('alert-dept-filter')?.value || '';
+  const alerts = APP.alerts.filter(alert => {
+    const matchesDepartment = !department || (alert.department || '').toLowerCase() === department.toLowerCase();
+    const isResolved = alert.status === 'resolved';
+    const matchesFilter = APP.alertFilter === 'all' || (APP.alertFilter === 'resolved' ? isResolved : !isResolved);
+    return matchesDepartment && matchesFilter;
+  });
+  const count = document.getElementById('alerts-count');
+  if (count) count.textContent = `${alerts.length} Active`;
+  if (!alerts.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-tertiary);">No alerts for this filter</td></tr>';
+    return;
+  }
+  tbody.innerHTML = alerts.map(alert => {
+    const severity = String(alert.severity || alert.type || 'info').toLowerCase();
+    const label = severity.charAt(0).toUpperCase() + severity.slice(1);
+    const status = alert.status || 'active';
+    return `<tr class="alert-row">
+      <td><strong>${alert.title || 'Operational alert'}</strong><div style="font-size:11px;color:var(--text-tertiary);margin-top:3px;">${alert.message || ''}</div></td>
+      <td>${alert.department || 'Hospital-wide'}</td>
+      <td><span class="badge badge-${severity}">${label}</span></td>
+      <td>${alert.time || 'Live'}</td>
+      <td><span class="badge ${status === 'resolved' ? 'badge-allocated' : 'badge-waiting'}">${status}</span></td>
+      <td><button class="btn-ghost" type="button" onclick="this.closest('tr').querySelector('.badge').textContent='reviewed'">Review</button></td>
+    </tr>`;
+  }).join('');
+}
+
 // ── ANALYTICS ─────────────────────────────────────────────────
 async function loadAnalytics() {
   const [patients, queueData, metrics] = await Promise.all([
@@ -731,6 +852,9 @@ async function generateAIInsight() {
 
 window.runPrediction = runPrediction;
 window.generateAIInsight = generateAIInsight;
+window.filterAlerts = filterAlerts;
+window.renderAlerts = renderAlerts;
+window.switchInventoryTab = switchInventoryTab;
 
 // ── Init ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {

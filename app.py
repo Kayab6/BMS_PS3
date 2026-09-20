@@ -333,6 +333,7 @@ def api_alerts():
         alerts.append({
             "type": "critical",
             "title": "ICU Capacity Critical",
+            "department": "ICU",
             "message": f"ICU available beds down to {icu_avail}/{icu_total}. Immediate triage diversion advised.",
             "time": "Just now",
         })
@@ -343,6 +344,7 @@ def api_alerts():
         alerts.append({
             "type": "warning",
             "title": "Clinical Staff Shortage",
+            "department": "Hospital-wide",
             "message": f"Doctor on-duty coverage ({doc_avail}) or nurse coverage ({nurse_avail}) below standard buffer.",
             "time": "3m ago",
         })
@@ -353,6 +355,7 @@ def api_alerts():
         alerts.append({
             "type": "critical" if any(b.units_available < 3 for b in low_blood) else "warning",
             "title": "Blood Bank Shortage",
+            "department": "Blood Bank",
             "message": f"Units low for blood group(s): {types_str}.",
             "time": "10m ago",
         })
@@ -363,6 +366,7 @@ def api_alerts():
         alerts.append({
             "type": "warning",
             "title": "Medication Threshold Alert",
+            "department": "Pharmacy",
             "message": f"Stock under minimum buffer for: {med_names}.",
             "time": "15m ago",
         })
@@ -372,6 +376,7 @@ def api_alerts():
         alerts.append({
             "type": "critical",
             "title": "Emergency Queue Surge",
+            "department": "Emergency",
             "message": f"Patient queue volume high with {waiting_count} active waiting patients.",
             "time": "Just now",
         })
@@ -379,6 +384,7 @@ def api_alerts():
         alerts.append({
             "type": "info",
             "title": "Operations Normal",
+            "department": "Hospital-wide",
             "message": "All clinical departments and resource levels within standard parameters.",
             "time": "Live",
         })

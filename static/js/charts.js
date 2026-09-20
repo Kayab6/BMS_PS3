@@ -704,7 +704,7 @@ function initChartResourceTrend(canvasId) {
 function initChartAlertsSeverity(canvasId, alerts) {
   destroyChart(canvasId);
   const sevs = ['Critical','High','Medium','Low'];
-  const counts = sevs.map(s => alerts.filter(a => a.severity === s).length);
+  const counts = sevs.map(s => alerts.filter(a => String(a.severity || a.type || '').toLowerCase() === s.toLowerCase()).length);
   const ctx = document.getElementById(canvasId).getContext('2d');
   CHARTS[canvasId] = new Chart(ctx, {
     type: 'doughnut',
@@ -727,8 +727,8 @@ function initChartAlertsSeverity(canvasId, alerts) {
 // ── 11. Alerts by Department ──────────────────────────────────
 function initChartAlertsDept(canvasId, alerts) {
   destroyChart(canvasId);
-  const depts = [...new Set(alerts.map(a => a.department))];
-  const counts = depts.map(d => alerts.filter(a => a.department === d).length);
+  const depts = [...new Set(alerts.map(a => a.department || 'Hospital-wide'))];
+  const counts = depts.map(d => alerts.filter(a => (a.department || 'Hospital-wide') === d).length);
   const ctx = document.getElementById(canvasId).getContext('2d');
   CHARTS[canvasId] = new Chart(ctx, {
     type: 'bar',
