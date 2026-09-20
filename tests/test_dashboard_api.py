@@ -8,9 +8,9 @@ def test_index_page():
     assert response.status_code == 200
     html = response.get_data(as_text=True)
     assert 'MEDFLOW' in html
-    assert 'Hospital Operations Center' in html
-    assert 'resourceUtilizationChart' in html
-    assert 'strategyComparisonChart' in html
+    assert 'Operations Platform' in html
+    assert 'chart-resource-snapshot' in html
+    assert 'chart-urgency-mix' in html
 
 
 def test_all_member4_apis():

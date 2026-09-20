@@ -815,7 +815,7 @@ function initChartPatientFlow(canvasId, patients) {
   const hours = Array.from({length:24}, (_,i) => `${String(i).padStart(2,'0')}:00`);
   // Simulate flow data from patient count
   const total = patients.length || 48;
-  const admitted = hours.map((_, i) => Math.max(0, Math.round((total * 0.05) + Math.sin(i/4) * (total * 0.03) + Math.random() * 2));
+  const admitted = hours.map((_, i) => Math.max(0, Math.round((total * 0.05) + Math.sin(i/4) * (total * 0.03) + Math.random() * 2)));
   const active   = hours.map((_, i) => Math.round(total * 0.4 + Math.sin(i/3) * (total * 0.15)));
 
   const ctx = document.getElementById(canvasId).getContext('2d');

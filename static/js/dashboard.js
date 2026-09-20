@@ -341,6 +341,10 @@ function renderQueueTable(queue) {
             ${status}
           </span>
         </td>
+      </tr>
+    `;
+  }).join('');
+}
 /* ============================================================
    MEDFLOW — Dashboard & Routing (dashboard.js)
    SPA router, API layer, dashboard logic, queue logic
