@@ -1,3 +1,346 @@
+/**
+ * MEDFLOW Hospital Operations Center - Core Dashboard Engine
+ * Orchestrates real-time telemetry, auto-refresh polling, data rendering,
+ * ML wait time predictions, and Hugging Face AI operations insights.
+ */
+
+// State tracking
+let autoRefreshInterval = null;
+let isAutoRefreshActive = true;
+const REFRESH_RATE_MS = 3000;
+
+// Current system telemetry cache
+let currentMetricsCache = null;
+let currentResourcesCache = null;
+
+/**
+ * Main application initialization
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('MEDFLOW Operations Center initializing...');
+
+  // 1. Initialize charts
+  if (typeof initCharts === 'function') {
+    initCharts();
+  }
+
+  // 2. Initialize simulation controls
+  if (typeof initSimulationControls === 'function') {
+    initSimulationControls();
+  }
+
+  // 3. Setup event listeners
+  setupEventListeners();
+
+  // 4. Load initial dashboard data immediately
+  loadDashboard();
+
+  // 5. Start auto-refresh polling loop (every 3 seconds)
+  startAutoRefresh();
+});
+
+/**
+ * Setup UI interaction listeners
+ */
+function setupEventListeners() {
+  // Auto-refresh toggle switch
+  const autoRefreshToggle = document.getElementById('autoRefreshToggle');
+  if (autoRefreshToggle) {
+    autoRefreshToggle.addEventListener('change', (e) => {
+      isAutoRefreshActive = e.target.checked;
+      if (isAutoRefreshActive) {
+        startAutoRefresh();
+      } else {
+        stopAutoRefresh();
+      }
+    });
+  }
+
+  // Inventory tab switching
+  const invTabs = document.querySelectorAll('.inv-tab-btn');
+  invTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      invTabs.forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.inventory-section').forEach(s => s.classList.remove('active'));
+
+      tab.classList.add('active');
+      const targetId = tab.dataset.target;
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) targetSection.classList.add('active');
+    });
+  });
+
+  // Queue search & filter
+  const queueSearch = document.getElementById('queueSearchInput');
+  const deptFilter = document.getElementById('queueDeptFilter');
+  if (queueSearch) queueSearch.addEventListener('input', filterQueueTable);
+  if (deptFilter) deptFilter.addEventListener('change', filterQueueTable);
+
+  // ML Prediction form submission
+  const predictBtn = document.getElementById('predictWaitBtn');
+  if (predictBtn) {
+    predictBtn.addEventListener('click', handlePredictWaitTime);
+  }
+
+  // ML Quick Sync with Live State button
+  const syncBtn = document.getElementById('syncHospitalStateBtn');
+  if (syncBtn) {
+    syncBtn.addEventListener('click', syncFormWithHospitalState);
+  }
+
+  // Hugging Face AI Insight button
+  const explainBtn = document.getElementById('generateAiExplainBtn');
+  if (explainBtn) {
+    explainBtn.addEventListener('click', handleGenerateAiInsight);
+  }
+}
+
+/**
+ * Auto-refresh polling management
+ */
+function startAutoRefresh() {
+  stopAutoRefresh();
+  isAutoRefreshActive = true;
+  autoRefreshInterval = setInterval(() => {
+    if (isAutoRefreshActive) {
+      loadDashboard();
+    }
+  }, REFRESH_RATE_MS);
+}
+
+function stopAutoRefresh() {
+  if (autoRefreshInterval) {
+    clearInterval(autoRefreshInterval);
+    autoRefreshInterval = null;
+  }
+}
+
+/**
+ * Master Load Dashboard Routine - Fetches all API data
+ */
+async function loadDashboard() {
+  try {
+    await Promise.allSettled([
+      fetchMetrics(),
+      fetchResources(),
+      fetchQueue(),
+      fetchBloodBank(),
+      fetchMedicines(),
+      fetchEquipment(),
+      fetchAlerts(),
+      fetchStrategyComparison()
+    ]);
+  } catch (err) {
+    console.error('Error during dashboard load:', err);
+  }
+}
+
+/**
+ * 3. KPI Cards - GET /api/metrics
+ */
+async function fetchMetrics() {
+  try {
+    const res = await fetch('/api/metrics');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    currentMetricsCache = data;
+
+    // Extract or compute 6 KPI values
+    const patientsServed = data.patients_served ?? (data.total_patients - (data.waiting_patients || 0));
+    const patientsWaiting = data.waiting_patients ?? data.queue_length ?? 0;
+    const criticalPatients = data.critical_patients ?? Math.round(patientsWaiting * 0.25);
+    const avgWaitTime = data.average_waiting_time ?? 24.5;
+    const icuUtil = data.icu_utilization ?? 75.0;
+    const overallUtil = data.overall_resource_utilization ?? 68.0;
+
+    // Update DOM
+    updateAnimatedCounter('kpiServed', patientsServed);
+    updateAnimatedCounter('kpiWaiting', patientsWaiting);
+    updateAnimatedCounter('kpiCritical', criticalPatients);
+    updateAnimatedCounter('kpiAvgWait', avgWaitTime.toFixed(1));
+    updateAnimatedCounter('kpiIcuUtil', Math.round(icuUtil));
+    updateAnimatedCounter('kpiOverallUtil', Math.round(overallUtil));
+
+    // Update queue chart with new queue length
+    if (typeof updateQueueTrendChartData === 'function') {
+      updateQueueTrendChartData(patientsWaiting);
+    }
+  } catch (err) {
+    console.debug('Using cached/fallback metrics data:', err);
+  }
+}
+
+/**
+ * 4. Resource Status - GET /api/resources
+ */
+async function fetchResources() {
+  try {
+    const res = await fetch('/api/resources');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    currentResourcesCache = data;
+
+    // Support both schema formats (top-level keys or nested hospital.r_type)
+    const normalizeResource = (item, defaultTotal, defaultAvail) => {
+      if (!item) return { total: defaultTotal, available: defaultAvail, allocated: defaultTotal - defaultAvail, utilization: 0, status: 'Good' };
+      const total = item.total ?? item.capacity ?? defaultTotal;
+      const available = item.available ?? (total - (item.allocated ?? 0));
+      const allocated = item.allocated ?? Math.max(0, total - available);
+      const util = total > 0 ? (allocated / total) * 100 : 0;
+      let status = 'Optimal';
+      let statusClass = 'badge-green';
+      if (util >= 80) {
+        status = 'Critical';
+        statusClass = 'badge-red';
+      } else if (util >= 60) {
+        status = 'Moderate';
+        statusClass = 'badge-amber';
+      }
+      return { total, available, allocated, utilization: util, status, statusClass };
+    };
+
+    const resources = {
+      beds: normalizeResource(data.general_beds || data.beds, 50, 35),
+      icu: normalizeResource(data.icu_beds || data.icu, 10, 2),
+      doctors: normalizeResource(data.doctors, 20, 7),
+      nurses: normalizeResource(data.nurses, 40, 16),
+      or: normalizeResource(data.operating_rooms || data.or, 5, 2),
+      ambulances: normalizeResource(data.ambulances, 5, 3)
+    };
+
+    // Render 6 resource cards
+    renderResourceCard('resGenBeds', resources.beds);
+    renderResourceCard('resIcuBeds', resources.icu);
+    renderResourceCard('resDoctors', resources.doctors);
+    renderResourceCard('resNurses', resources.nurses);
+    renderResourceCard('resOperatingRooms', resources.or);
+    renderResourceCard('resAmbulances', resources.ambulances);
+
+    // Update resource utilization chart
+    if (typeof updateResourceChartData === 'function') {
+      updateResourceChartData(data);
+    }
+  } catch (err) {
+    console.debug('Using fallback resource cards data:', err);
+  }
+}
+
+function renderResourceCard(elementId, res) {
+  const container = document.getElementById(elementId);
+  if (!container) return;
+
+  const countEl = container.querySelector('.resource-count');
+  const barEl = container.querySelector('.progress-fill');
+  const statusEl = container.querySelector('.resource-status-tag');
+  const utilEl = container.querySelector('.resource-util-label');
+
+  if (countEl) {
+    countEl.innerHTML = `<strong>${res.available}</strong> / ${res.total} Avail`;
+  }
+  if (barEl) {
+    barEl.style.width = `${Math.min(100, Math.max(5, res.utilization))}%`;
+    barEl.className = 'progress-fill ' + (
+      res.utilization >= 80 ? 'status-critical' :
+      res.utilization >= 60 ? 'status-moderate' : 'status-good'
+    );
+  }
+  if (statusEl) {
+    statusEl.textContent = res.status;
+    statusEl.className = 'resource-status-tag ' + res.statusClass;
+  }
+  if (utilEl) {
+    utilEl.textContent = `${Math.round(res.utilization)}% in use`;
+  }
+}
+
+/**
+ * 5. Patient Queue - GET /api/queue
+ */
+let cachedQueueList = [];
+
+async function fetchQueue() {
+  try {
+    const res = await fetch('/api/queue');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const queue = await res.json();
+    cachedQueueList = queue;
+
+    renderQueueTable(queue);
+
+    // Update waiting time chart
+    if (typeof updateWaitTimeChartData === 'function') {
+      const avg = currentMetricsCache?.average_waiting_time ?? 25;
+      updateWaitTimeChartData(queue, avg);
+    }
+  } catch (err) {
+    console.debug('Error fetching patient queue:', err);
+  }
+}
+
+function renderQueueTable(queue) {
+  const tbody = document.getElementById('queueTableBody');
+  const countBadge = document.getElementById('queueCountBadge');
+  if (!tbody) return;
+
+  if (countBadge) {
+    countBadge.textContent = `${queue.length} Active`;
+  }
+
+  if (queue.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-muted);">
+          No patients waiting in queue. System optimal.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  // Sort by priority descending (or queue_position ascending)
+  const sorted = [...queue].sort((a, b) => {
+    if (b.priority != null && a.priority != null) return b.priority - a.priority;
+    if (b.urgency !== a.urgency) return b.urgency - a.urgency;
+    return (a.queue_position || 0) - (b.queue_position || 0);
+  });
+
+  tbody.innerHTML = sorted.map((p, idx) => {
+    const urgency = p.urgency || 3;
+    const urgencyClass = `urgency-${urgency}`;
+    const waitTime = p.estimated_waiting_time ?? p.wait_time ?? Math.round(15 + idx * 4);
+    const priority = p.priority != null ? Number(p.priority).toFixed(1) : (10.0 + urgency * 2 - idx * 0.2).toFixed(1);
+    const patientId = p.patient_id ? `P-${p.patient_id}` : `P-${100 + idx}`;
+    const name = p.name || `Patient #${p.patient_id || idx + 1}`;
+    const dept = p.department || 'General Medicine';
+    const status = (p.status || 'waiting').toUpperCase();
+
+    return `
+      <tr data-dept="${dept.toLowerCase()}" data-search="${name.toLowerCase()} ${patientId.toLowerCase()}">
+        <td class="patient-id-cell">
+          <div style="font-weight: 700;">${name}</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">${patientId}</div>
+        </td>
+        <td>
+          <span class="badge-pill" style="background: rgba(255, 255, 255, 0.06); color: var(--text-secondary); border: 1px solid var(--border-color);">
+            ${dept}
+          </span>
+        </td>
+        <td>
+          <span class="urgency-badge ${urgencyClass}">
+            Level ${urgency}
+          </span>
+        </td>
+        <td style="font-family: var(--font-mono); color: var(--text-primary);">
+          ${waitTime} <span style="font-size: 0.75rem; color: var(--text-muted);">min</span>
+        </td>
+        <td>
+          <span class="priority-score">${priority}</span>
+        </td>
+        <td>
+          <span class="badge-pill ${status === 'ALLOCATED' || status === 'IN_TREATMENT' ? 'badge-blue' : 'badge-amber'}">
+            ${status}
+          </span>
+        </td>
 /* ============================================================
    MEDFLOW — Dashboard & Routing (dashboard.js)
    SPA router, API layer, dashboard logic, queue logic

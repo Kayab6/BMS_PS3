@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Patients — MEDFLOW</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="mf-header"><div class="mf-header-inner">
+  <a href="/" class="mf-brand"><div class="mf-brand-icon">✚</div><div class="mf-brand-text"><span class="mf-brand-name">MEDFLOW</span><span class="mf-brand-sub">Hospital Operations Center</span></div></a>
+  <nav class="mf-nav">
+    <a href="/" class="mf-nav-link">Dashboard</a>
+    <a href="/patients" class="mf-nav-link active">Patients</a>
+    <a href="/scheduling" class="mf-nav-link">Scheduling</a>
+    <a href="/simulation" class="mf-nav-link">Simulation</a>
+    <a href="/resources" class="mf-nav-link">Resources</a>
+    <a href="/analytics" class="mf-nav-link">Analytics</a>
+    <a href="/ai-insights" class="mf-nav-link">AI Insights</a>
+    <div class="mf-nav-divider"></div>
+    <a href="/alerts" class="mf-nav-link">Alerts</a>
+    <a href="/inventory" class="mf-nav-link">Inventory</a>
+  </nav>
+  <div class="mf-header-actions">
+    <div class="mf-status-pill"><span class="mf-status-dot"></span><span>LIVE</span></div>
+    <button class="mf-icon-btn">🔔<span class="mf-notif-badge"></span></button>
+    <div class="mf-profile"><div class="mf-avatar">DR</div><span class="mf-profile-name">Dr. Jenkins</span></div>
+  </div>
+</div></header>
+<div class="mf-page-head"><div class="mf-page-head-inner">
+  <div><p class="mf-page-eyebrow">Patient Management</p><h1 class="mf-page-title">Patients</h1><p class="mf-page-subtitle">Real-time census, triage status and department assignments.</p></div>
+  <button class="btn-ghost" onclick="loadPatients()">↻ Refresh</button>
+</div></div>
+<main class="mf-page"><div class="mf-container">
+  <div class="mf-three-col mf-section-first">
+    <div class="mf-stat-item"><span class="mf-stat-label">Total Patients</span><span class="mf-stat-value" id="ptTotal">—</span><span class="mf-stat-sub">in system</span></div>
+    <div class="mf-stat-item"><span class="mf-stat-label">Waiting</span><span class="mf-stat-value" id="ptWaiting">—</span><span class="mf-stat-sub">in queue</span></div>
+    <div class="mf-stat-item"><span class="mf-stat-label">Allocated</span><span class="mf-stat-value" id="ptAllocated">—</span><span class="mf-stat-sub">receiving care</span></div>
+  </div>
+  <div class="mf-section mf-card">
+    <div class="mf-card-header"><span class="mf-card-title">Patient Census</span></div>
+    <div class="mf-table-wrap"><table class="mf-table">
+      <thead><tr><th>#</th><th>Name</th><th>Department</th><th>Urgency</th><th>Status</th><th>Arrival</th></tr></thead>
+      <tbody id="patientsTableBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading...</td></tr></tbody>
+    </table></div>
+  </div>
+</div></main>
+<script>
+async function loadPatients() {
+  try {
+    const res = await fetch('/api/patients');
+    const d = await res.json();
+    const arr = Array.isArray(d) ? d : (d.patients || []);
+    document.getElementById('ptTotal').textContent = arr.length;
+    document.getElementById('ptWaiting').textContent = arr.filter(p => p.status === 'waiting').length;
+    document.getElementById('ptAllocated').textContent = arr.filter(p => p.status === 'allocated').length;
+    const tbody = document.getElementById('patientsTableBody');
+    if (!arr.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No patients found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = arr.map((p, i) => `<tr>
+      <td style="font-family:var(--font-mono);color:var(--text-muted)">${i+1}</td>
+      <td style="font-weight:600">${p.name || 'Patient #' + p.id}</td>
+      <td>${p.department || '—'}</td>
+      <td><span class="urgency-badge urgency-${p.urgency||1}">${p.urgency||1}</span></td>
+      <td><span class="inv-status ${(p.status||'waiting').toUpperCase().replace(' ','_')}">${p.status||'waiting'}</span></td>
+      <td style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-muted)">${p.arrival_time||'—'}</td>
+    </tr>`).join('');
+  } catch(e) { console.error(e); }
+}
+document.addEventListener('DOMContentLoaded', loadPatients);
+setInterval(loadPatients, 8000);
+</script>
+</body></html>
