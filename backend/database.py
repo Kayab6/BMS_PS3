@@ -87,6 +87,8 @@ def seed_resources():
         ("equipment", "Ventilator", "ICU", 5, 2),
         ("equipment", "Monitor", "Emergency", 8, 4),
         ("equipment", "Wheelchair", "General Medicine", 5, 2),
+        ("operating_room", "Operating Room", "General Surgery", 4, 2),
+        ("ambulance", "Ambulance", "Emergency", 6, 4),
     ]
     for resource_type, name, department, total_quantity, available_quantity in resources:
         if not Resource.query.filter_by(name=name, resource_type=resource_type).first():
@@ -149,14 +151,10 @@ def seed_patients():
 
 
 def initialize_database():
-    if not Department.query.first():
-        seed_departments()
-    if not Resource.query.first():
-        seed_resources()
-    if not BloodInventory.query.first():
-        seed_inventory()
-    if not Patient.query.first():
-        seed_patients()
+    seed_departments()
+    seed_resources()
+    seed_inventory()
+    seed_patients()
 
 
 def get_patient_payloads():
@@ -177,19 +175,38 @@ def get_patient_payloads():
 
 
 def get_resource_summary():
-    resource_map = {
-        "beds": {"total": 20, "available": 5},
-        "doctors": {"total": 10, "available": 3},
-        "nurses": {"total": 15, "available": 6},
-        "icu": {"total": 8, "available": 2},
+    resource_map = {}
+    type_aliases = {
+        "bed": "beds",
+        "icu": "icu",
+        "doctor": "doctors",
+        "nurse": "nurses",
+        "operating_room": "operating_rooms",
+        "ambulance": "ambulances",
     }
+    for resource in Resource.query.all():
+        key = type_aliases.get(resource.resource_type, resource.resource_type)
+        summary = resource_map.setdefault(key, {"total": 0, "available": 0})
+        summary["total"] += resource.total_quantity
+        summary["available"] += resource.available_quantity
+    for key in ("beds", "icu", "doctors", "nurses", "operating_rooms", "ambulances"):
+        resource_map.setdefault(key, {"total": 0, "available": 0})
     return resource_map
 
 
 def get_customer_metric_summary():
     total_patients = Patient.query.count()
-    waiting_patients = Patient.query.filter_by(status="waiting").count()
-    average_wait = max(0.0, round((total_patients * 5.4) + (waiting_patients * 8.2), 1))
+    waiting = Patient.query.filter_by(status="waiting").all()
+    waiting_patients = len(waiting)
+    now = datetime.utcnow()
+    wait_minutes = []
+    for patient in waiting:
+        try:
+            arrival = datetime.fromisoformat(patient.arrival_time)
+            wait_minutes.append(max(0.0, (now - arrival).total_seconds() / 60))
+        except (TypeError, ValueError):
+            continue
+    average_wait = round(sum(wait_minutes) / len(wait_minutes), 1) if wait_minutes else 0.0
 
     resource_summary = get_resource_summary()
     blood_units = sum(item.units_available for item in BloodInventory.query.all())

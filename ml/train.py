@@ -26,7 +26,14 @@ def generate_synthetic_dataset(path: Path = DATASET_PATH, rows: int = 1200):
         doctor_availability = int(rng.integers(1, 8))
         nurse_availability = int(rng.integers(2, 12))
         treatment_duration = int(rng.integers(15, 180))
-        base_wait = urgency * 4 + queue_length * 2 + (5 - icu_availability) * 5 + (5 - bed_availability) * 3
+        base_wait = (
+            urgency * 4
+            + queue_length * 2
+            + (5 - icu_availability) * 5
+            + (5 - bed_availability) * 3
+            + max(0, 4 - doctor_availability) * 3
+            + max(0, 6 - nurse_availability) * 1.5
+        )
         noise = rng.normal(0, 6)
         actual_wait = max(0, int(base_wait + noise + (department == "Emergency") * 8))
         records.append(

@@ -984,7 +984,7 @@ function initChartAdmDis(canvasId, total) {
   const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const n = total || 48;
   const adm = labels.map(() => Math.round(n * 0.1 + Math.random() * n * 0.06));
-  const dis = labels.map((_,i) => Math.max(0, Math.round(adm[i] * (0.7 + Math.random() * 0.4)));
+  const dis = labels.map((_,i) => Math.max(0, Math.round(adm[i] * (0.7 + Math.random() * 0.4))));
   const ctx = document.getElementById(canvasId).getContext('2d');
   CHARTS[canvasId] = new Chart(ctx, {
     type: 'bar',

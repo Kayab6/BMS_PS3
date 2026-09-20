@@ -34,6 +34,19 @@ def predict_wait_time(data):
     if missing:
         raise ValueError(f"Missing required field: {missing[0]}")
 
+    integer_fields = [field for field in required_fields if field != "department"]
+    for field in integer_fields:
+        value = data[field]
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not np.isfinite(value):
+            raise ValueError(f"{field} must be a finite number")
+        if int(value) != value:
+            raise ValueError(f"{field} must be a whole number")
+        if value < 0:
+            raise ValueError(f"{field} must be non-negative")
+
+    if not isinstance(data["department"], str) or not data["department"].strip():
+        raise ValueError("department must be a non-empty string")
+
     ensure_model_ready()
 
     model = joblib.load(MODEL_PATH)

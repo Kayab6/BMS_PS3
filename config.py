@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "medflow.db"
+DB_PATH = BASE_DIR / "instance" / "medflow.db"
 
 DEBUG = False
 SECRET_KEY = os.getenv("SECRET_KEY", "demo-secret-key")

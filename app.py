@@ -19,6 +19,7 @@ from backend.database import (
     initialize_database,
 )
 from ml.predict import predict_wait_time
+from config import DB_PATH
 from resources.manager import ResourceManager
 from scheduling.priority_queue import HospitalPriorityQueue
 from scheduling.scheduler import Scheduler
@@ -28,7 +29,7 @@ from simulation.engine import run_simulation
 load_dotenv()
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///medflow.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
@@ -151,42 +152,50 @@ def page_patients():
 
 @app.route("/scheduling")
 def page_scheduling():
-    return render_template("scheduling.html")
+    return render_template("index.html")
 
 
 @app.route("/simulation")
 def page_simulation():
-    return render_template("simulation.html")
+    return render_template("index.html")
 
 
 @app.route("/resources")
 def page_resources():
-    return render_template("resources.html")
+    return render_template("index.html")
 
 
 @app.route("/ai-insights")
 def page_ai_insights():
-    return render_template("ai_insights.html")
+    return render_template("index.html")
 
 
 @app.route("/alerts")
 def page_alerts():
-    return render_template("alerts.html")
+    return render_template("index.html")
 
 
 @app.route("/inventory")
 def page_inventory():
-    return render_template("inventory.html")
+    return render_template("index.html")
 
 
 @app.route("/queue")
 def page_queue():
-    return render_template("queue.html")
+    return render_template("index.html")
 
 
+@app.route("/health")
 @app.route("/api/health")
 def api_health():
-    return jsonify({"status": "ok"})
+    try:
+        db.session.execute(db.select(Patient).limit(1)).first()
+        from ml.predict import MODEL_PATH, ENCODER_PATH
+        prediction_status = "ok" if MODEL_PATH.exists() and ENCODER_PATH.exists() else "not_ready"
+        return jsonify({"status": "ok", "backend": "ok", "database": "ok", "prediction": prediction_status})
+    except Exception as exc:
+        app.logger.exception("Health check failed")
+        return jsonify({"status": "error", "backend": "ok", "database": "error", "error": str(exc)}), 503
 
 
 @app.route("/api/patients")
@@ -198,47 +207,17 @@ def api_patients():
 @app.route("/api/resources")
 def api_resources():
     base = get_resource_summary()
-    res = {
-        "beds": {"total": 50, "available": 35, "allocated": 15, "utilization_percent": 30.0, "status": "Optimal"},
-        "general_beds": {"total": 50, "available": 35, "allocated": 15, "utilization_percent": 30.0, "status": "Optimal"},
-        "icu": {"total": 8, "available": 2, "allocated": 6, "utilization_percent": 75.0, "status": "Moderate"},
-        "icu_beds": {"total": 8, "available": 2, "allocated": 6, "utilization_percent": 75.0, "status": "Moderate"},
-        "doctors": {"total": 16, "available": 7, "allocated": 9, "utilization_percent": 56.3, "status": "Optimal"},
-        "nurses": {"total": 25, "available": 16, "allocated": 9, "utilization_percent": 36.0, "status": "Optimal"},
-        "operating_rooms": {"total": 5, "available": 2, "allocated": 3, "utilization_percent": 60.0, "status": "Moderate"},
-        "or": {"total": 5, "available": 2, "allocated": 3, "utilization_percent": 60.0, "status": "Moderate"},
-        "ambulances": {"total": 5, "available": 4, "allocated": 1, "utilization_percent": 20.0, "status": "Optimal"},
-    }
-    if "beds" in base:
-        b_tot = base["beds"].get("total", 50)
-        b_av = base["beds"].get("available", 35)
-        res["beds"]["total"] = b_tot
-        res["beds"]["available"] = b_av
-        res["beds"]["allocated"] = max(0, b_tot - b_av)
-        res["beds"]["utilization_percent"] = round((max(0, b_tot - b_av) / b_tot) * 100, 1) if b_tot else 0
-        res["general_beds"] = res["beds"]
-    if "icu" in base:
-        i_tot = base["icu"].get("total", 8)
-        i_av = base["icu"].get("available", 2)
-        res["icu"]["total"] = i_tot
-        res["icu"]["available"] = i_av
-        res["icu"]["allocated"] = max(0, i_tot - i_av)
-        res["icu"]["utilization_percent"] = round((max(0, i_tot - i_av) / i_tot) * 100, 1) if i_tot else 0
-        res["icu_beds"] = res["icu"]
-    if "doctors" in base:
-        d_tot = base["doctors"].get("total", 16)
-        d_av = base["doctors"].get("available", 7)
-        res["doctors"]["total"] = d_tot
-        res["doctors"]["available"] = d_av
-        res["doctors"]["allocated"] = max(0, d_tot - d_av)
-        res["doctors"]["utilization_percent"] = round((max(0, d_tot - d_av) / d_tot) * 100, 1) if d_tot else 0
-    if "nurses" in base:
-        n_tot = base["nurses"].get("total", 25)
-        n_av = base["nurses"].get("available", 16)
-        res["nurses"]["total"] = n_tot
-        res["nurses"]["available"] = n_av
-        res["nurses"]["allocated"] = max(0, n_tot - n_av)
-        res["nurses"]["utilization_percent"] = round((max(0, n_tot - n_av) / n_tot) * 100, 1) if n_tot else 0
+    res = {}
+    for key, values in base.items():
+        total = values["total"]
+        available = values["available"]
+        allocated = max(0, total - available)
+        utilization = round((allocated / total) * 100, 1) if total else 0
+        status = "Critical" if utilization >= 80 else "Moderate" if utilization >= 60 else "Optimal"
+        res[key] = {"total": total, "available": available, "allocated": allocated, "utilization_percent": utilization, "status": status}
+    res["general_beds"] = res["beds"]
+    res["icu_beds"] = res["icu"]
+    res["or"] = res["operating_rooms"]
     return jsonify(res)
 
 
@@ -408,31 +387,34 @@ def api_alerts():
 
 @app.route("/api/strategies/compare")
 def api_strategies_compare():
+    patients = Patient.query.filter_by(status="waiting").all()
+    resource_summary = get_resource_summary()
+    total_capacity = sum(item["total"] for item in resource_summary.values())
+    available_capacity = sum(item["available"] for item in resource_summary.values())
+    utilization = round(((total_capacity - available_capacity) / total_capacity) * 100, 1) if total_capacity else 0
+
+    def summarize(ordered_patients, name):
+        waits = []
+        critical_waits = []
+        elapsed = 0
+        for patient in ordered_patients:
+            waits.append(elapsed)
+            if patient.urgency >= 4:
+                critical_waits.append(elapsed)
+            elapsed += max(1, patient.treatment_duration)
+        return {
+            "name": name,
+            "avg_wait_time": round(sum(waits) / len(waits), 1) if waits else 0,
+            "critical_wait_time": round(sum(critical_waits) / len(critical_waits), 1) if critical_waits else 0,
+            "patients_served": len(ordered_patients),
+            "resource_utilization": utilization,
+            "bottlenecks": sum(1 for item in resource_summary.values() if item["available"] == 0),
+        }
+
     comparison = {
-        "FCFS": {
-            "name": "First-Come First-Served",
-            "avg_wait_time": 48.2,
-            "critical_wait_time": 39.4,
-            "patients_served": 28,
-            "resource_utilization": 54.0,
-            "bottlenecks": 9,
-        },
-        "URGENCY_ONLY": {
-            "name": "Urgency-Only Triage",
-            "avg_wait_time": 34.5,
-            "critical_wait_time": 16.2,
-            "patients_served": 33,
-            "resource_utilization": 61.0,
-            "bottlenecks": 6,
-        },
-        "MEDFLOW": {
-            "name": "MEDFLOW (Dynamic Optimization)",
-            "avg_wait_time": 18.6,
-            "critical_wait_time": 8.4,
-            "patients_served": 44,
-            "resource_utilization": 78.5,
-            "bottlenecks": 2,
-        },
+        "FCFS": summarize(sorted(patients, key=lambda item: item.arrival_time), "First-Come First-Served"),
+        "URGENCY_ONLY": summarize(sorted(patients, key=lambda item: (-item.urgency, item.arrival_time)), "Urgency-Only Triage"),
+        "MEDFLOW": summarize(sorted(patients, key=lambda item: (-item.urgency, item.treatment_duration, item.arrival_time)), "MEDFLOW (Dynamic Optimization)"),
     }
     return jsonify(comparison)
 
@@ -447,14 +429,14 @@ def api_simulation_start():
 
         simulation_run = SimulationRun(
             start_time=datetime.utcnow().isoformat(),
-            end_time=None,
-            status="running",
+            end_time=datetime.utcnow().isoformat(),
+            status="completed",
         )
         db.session.add(simulation_run)
         db.session.commit()
 
         SIMULATION_STATE["simulation_id"] = simulation_run.id
-        SIMULATION_STATE["status"] = "running"
+        SIMULATION_STATE["status"] = "completed"
         SIMULATION_STATE["time"] = 0
         SIMULATION_STATE["scenario"] = scenario
         SIMULATION_STATE["metrics"] = get_customer_metric_summary()

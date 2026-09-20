@@ -652,6 +652,86 @@ function setText(id, val) {
   if (el) el.textContent = val;
 }
 
+async function runPrediction() {
+  const button = document.getElementById('btn-predict');
+  const result = document.getElementById('predict-result-wrap');
+  const payload = {
+    department: document.getElementById('p-dept')?.value,
+    urgency: Number(document.getElementById('p-urgency')?.value),
+    queue_length: Number(document.getElementById('p-queue-len')?.value),
+    treatment_duration: Number(document.getElementById('p-treat-dur')?.value),
+    bed_availability: Number(document.getElementById('p-bed-avail')?.value),
+    icu_availability: Number(document.getElementById('p-icu-avail')?.value),
+    doctor_availability: Number(document.getElementById('p-doc-avail')?.value),
+    nurse_availability: Number(document.getElementById('p-nurse-avail')?.value),
+  };
+
+  if (button) {
+    button.disabled = true;
+    button.dataset.originalText = button.textContent;
+    button.textContent = 'Calculating...';
+  }
+
+  try {
+    const response = await fetch('/api/ml/predict-wait', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) throw new Error(data.error || `HTTP ${response.status}`);
+    if (result) {
+      result.innerHTML = `<div class="predict-result-card"><div class="chart-card-title">Predicted Waiting Time</div><div class="predict-result-value">${data.predicted_waiting_time.toFixed(1)} <span>min</span></div><div class="chart-card-subtitle">Based on the current queue and resource inputs</div></div>`;
+    }
+  } catch (error) {
+    if (result) result.innerHTML = `<div class="predict-empty"><p>Prediction failed: ${error.message}</p></div>`;
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = button.dataset.originalText || 'PREDICT WAIT TIME';
+    }
+  }
+}
+
+async function generateAIInsight() {
+  const result = document.getElementById('ai-result-text');
+  const metrics = APP.metrics && Object.keys(APP.metrics).length ? APP.metrics : await fetchMetrics();
+  if (!metrics) {
+    if (result) result.textContent = 'Unable to load live hospital metrics.';
+    return;
+  }
+  const queue = APP.queue.length ? APP.queue : (await fetchQueue()) || [];
+  const departments = queue.reduce((counts, patient) => {
+    counts[patient.department] = (counts[patient.department] || 0) + 1;
+    return counts;
+  }, {});
+  const highest = Object.entries(departments).sort((a, b) => b[1] - a[1])[0]?.[0] || 'General Medicine';
+  const payload = {
+    waiting_patients: metrics.waiting_patients || 0,
+    average_waiting_time: metrics.average_waiting_time || 0,
+    beds_available: metrics.beds_available || 0,
+    doctors_available: metrics.doctors_available || 0,
+    nurses_available: metrics.nurses_available || 0,
+    icu_available: metrics.icu_available || 0,
+    blood_units: metrics.blood_units || metrics.blood_units_available || 0,
+    medicine_stock: metrics.medicine_stock || 0,
+    highest_queue_department: highest,
+  };
+  const response = await fetch('/api/ai/explain', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+  if (result) {
+    result.classList.remove('empty');
+    result.textContent = response.ok && data.success ? data.explanation : `Insight failed: ${data.error || 'unknown error'}`;
+  }
+}
+
+window.runPrediction = runPrediction;
+window.generateAIInsight = generateAIInsight;
+
 // ── Init ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   bindNav();

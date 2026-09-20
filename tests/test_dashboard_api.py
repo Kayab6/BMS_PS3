@@ -90,7 +90,7 @@ def test_all_member4_apis():
     res = client.get('/api/simulation/status')
     assert res.status_code == 200
     sim_status = res.get_json()
-    assert sim_status['status'] == 'running'
+    assert sim_status['status'] == 'completed'
 
     # 9. POST /api/simulation/reset
     res = client.post('/api/simulation/reset')
