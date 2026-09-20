@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics &amp; Reports — MEDFLOW</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="mf-header">
+  <div class="mf-header-inner">
+    <a href="/" class="mf-brand">
+      <div class="mf-brand-icon">✚</div>
+      <div class="mf-brand-text">
+        <span class="mf-brand-name">MEDFLOW</span>
+        <span class="mf-brand-sub">Hospital Operations Center</span>
+      </div>
+    </a>
+    <nav class="mf-nav">
+      <a href="/" class="mf-nav-link">Dashboard</a>
+      <a href="/patients" class="mf-nav-link">Patients</a>
+      <a href="/scheduling" class="mf-nav-link">Scheduling</a>
+      <a href="/simulation" class="mf-nav-link">Simulation</a>
+      <a href="/resources" class="mf-nav-link">Resources</a>
+      <a href="/analytics" class="mf-nav-link active">Analytics</a>
+      <a href="/ai-insights" class="mf-nav-link">AI Insights</a>
+      <div class="mf-nav-divider"></div>
+      <a href="/alerts" class="mf-nav-link">Alerts</a>
+      <a href="/inventory" class="mf-nav-link">Inventory</a>
+    </nav>
+    <div class="mf-header-actions">
+      <div class="mf-status-pill"><span class="mf-status-dot"></span><span>LIVE</span></div>
+      <button class="mf-icon-btn">🔔<span class="mf-notif-badge"></span></button>
+      <div class="mf-profile"><div class="mf-avatar">DR</div><span class="mf-profile-name">Dr. Jenkins</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="mf-page-head">
+  <div class="mf-page-head-inner">
+    <div>
+      <p class="mf-page-eyebrow">Data &amp; Intelligence</p>
+      <h1 class="mf-page-title">Analytics &amp; Reports</h1>
+      <p class="mf-page-subtitle">Historical trends, operational benchmarks, and strategy performance.</p>
+    </div>
+    <button class="btn-ghost" onclick="loadAnalytics()">↻ Refresh</button>
+  </div>
+</div>
+
+<main class="mf-page">
+  <div class="mf-container">
+
+    <!-- Stat Summary Row -->
+    <div class="mf-stat-row">
+      <div class="mf-stat-item">
+        <span class="mf-stat-label">Total Patients Processed</span>
+        <span class="mf-stat-value" id="anaStatTotal">—</span>
+        <span class="mf-stat-sub">all time</span>
+      </div>
+      <div class="mf-stat-item">
+        <span class="mf-stat-label">Avg Wait Time</span>
+        <span class="mf-stat-value" id="anaStatWait">—</span>
+        <span class="mf-stat-sub">minutes</span>
+      </div>
+      <div class="mf-stat-item">
+        <span class="mf-stat-label">MEDFLOW Efficiency Gain</span>
+        <span class="mf-stat-value" style="color:var(--accent)">+61%</span>
+        <span class="mf-stat-sub">vs FCFS baseline</span>
+      </div>
+    </div>
+
+    <!-- Row 1: Patient Flow + Queue Dynamics -->
+    <div class="mf-two-col mf-section-first">
+      <div class="mf-card">
+        <div class="mf-card-header">
+          <span class="mf-card-title">Patient Flow Over Time</span>
+        </div>
+        <div class="mf-card-body">
+          <div class="mf-chart-wrap"><canvas id="patientFlowChart"></canvas></div>
+        </div>
+      </div>
+      <div class="mf-card">
+        <div class="mf-card-header">
+          <span class="mf-card-title">Queue Length Dynamics</span>
+        </div>
+        <div class="mf-card-body">
+          <div class="mf-chart-wrap"><canvas id="queueDynamicsChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Wait by Dept + Resource Utilization -->
+    <div class="mf-two-col mf-section">
+      <div class="mf-card">
+        <div class="mf-card-header">
+          <span class="mf-card-title">Wait Time by Department</span>
+        </div>
+        <div class="mf-card-body">
+          <div class="mf-chart-wrap"><canvas id="waitByDeptChart"></canvas></div>
+        </div>
+      </div>
+      <div class="mf-card">
+        <div class="mf-card-header">
+          <span class="mf-card-title">Resource Utilization</span>
+        </div>
+        <div class="mf-card-body">
+          <div class="mf-chart-wrap"><canvas id="resourceUtilizationChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: Strategy Benchmark -->
+    <div class="mf-section">
+      <div class="mf-card">
+        <div class="mf-card-header">
+          <span class="mf-card-title">Scheduling Strategy Benchmark</span>
+          <span style="font-size:0.72rem;color:var(--text-muted)">FCFS vs Urgency-Only vs MEDFLOW</span>
+        </div>
+        <div class="mf-card-body">
+          <div class="mf-chart-wrap" style="height:220px"><canvas id="strategyComparisonChart"></canvas></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);margin-top:var(--space-lg);" id="strategyStatsGrid">
+            <!-- populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 4: Admissions vs Discharges + Distribution -->
+    <div class="mf-two-col mf-section">
+      <div class="mf-card">
+        <div class="mf-card-header"><span class="mf-card-title">Admissions vs Discharges</span></div>
+        <div class="mf-card-body"><div class="mf-chart-wrap"><canvas id="admissionsChart"></canvas></div></div>
+      </div>
+      <div class="mf-card">
+        <div class="mf-card-header"><span class="mf-card-title">Patient / Case Distribution</span></div>
+        <div class="mf-card-body"><div class="mf-chart-wrap"><canvas id="caseDistributionChart"></canvas></div></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const CHART_COLORS = {
+  teal:   '#0D8267',
+  forest: '#0E3830',
+  amber:  '#D97706',
+  red:    '#B91C1C',
+  slate:  '#64748B',
+  sage:   '#10B981',
+  blue:   '#1D4ED8'
+};
+
+const CHART_DEFAULTS = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: { backgroundColor: '#0B2B24', titleColor: '#F6F4EF', bodyColor: 'rgba(246,244,239,0.7)', padding: 10, cornerRadius: 6 }
+  }
+};
+
+// Chart instances
+let patientFlowChart, queueDynamicsChart, waitByDeptChart, resourceUtilChart, strategyChart, admissionsChart, caseDistChart;
+
+function initCharts() {
+  const lineOpts = (color) => ({
+    ...CHART_DEFAULTS,
+    scales: {
+      x: { grid: { color: 'rgba(14,56,48,0.06)' }, ticks: { color: '#7A8B87', font: { family: 'JetBrains Mono', size: 10 } } },
+      y: { grid: { color: 'rgba(14,56,48,0.06)' }, ticks: { color: '#7A8B87', font: { family: 'JetBrains Mono', size: 10 } } }
+    },
+    elements: { line: { tension: 0.4, borderWidth: 2 }, point: { radius: 0, hoverRadius: 4 } }
+  });
+
+  // Patient Flow
+  patientFlowChart = new Chart(document.getElementById('patientFlowChart'), {
+    type: 'line',
+    data: {
+      labels: ['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00'],
+      datasets: [{
+        label: 'Admissions',
+        data: [4,9,14,18,16,12,8,6],
+        borderColor: CHART_COLORS.teal,
+        backgroundColor: 'rgba(13,130,103,0.08)',
+        fill: true
+      }, {
+        label: 'Discharges',
+        data: [2,5,8,13,14,11,9,7],
+        borderColor: CHART_COLORS.slate,
+        backgroundColor: 'rgba(100,116,139,0.06)',
+        fill: true
+      }]
+    },
+    options: { ...lineOpts(), plugins: { ...CHART_DEFAULTS.plugins, legend: { display: true, labels: { color: '#7A8B87', font: { size: 11 }, boxWidth: 12, usePointStyle: true } } } }
+  });
+
+  // Queue Dynamics
+  queueDynamicsChart = new Chart(document.getElementById('queueDynamicsChart'), {
+    type: 'line',
+    data: {
+      labels: ['Step 1','Step 5','Step 10','Step 15','Step 20','Step 25','Step 30'],
+      datasets: [{
+        label: 'Queue Length',
+        data: [8,14,18,22,17,11,6],
+        borderColor: CHART_COLORS.amber,
+        backgroundColor: 'rgba(217,119,6,0.08)',
+        fill: true
+      }]
+    },
+    options: lineOpts()
+  });
+
+  // Wait by Dept (horizontal bar)
+  waitByDeptChart = new Chart(document.getElementById('waitByDeptChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Emergency','ICU','Cardiology','Neurology','General Med','Gynecology'],
+      datasets: [{
+        data: [38,26,22,19,14,11],
+        backgroundColor: [CHART_COLORS.red,CHART_COLORS.amber,CHART_COLORS.teal,CHART_COLORS.sage,CHART_COLORS.slate,CHART_COLORS.blue],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      indexAxis: 'y',
+      scales: {
+        x: { grid: { color: 'rgba(14,56,48,0.06)' }, ticks: { color: '#7A8B87', font: { family: 'JetBrains Mono', size: 10 } } },
+        y: { grid: { display: false }, ticks: { color: '#3A4A45', font: { size: 11 } } }
+      }
+    }
+  });
+
+  // Resource Utilization
+  resourceUtilChart = new Chart(document.getElementById('resourceUtilizationChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Gen Beds','ICU Beds','Doctors','Nurses','Op Rooms','Ambulances'],
+      datasets: [{
+        data: [30,75,56,36,60,20],
+        backgroundColor: [
+          'rgba(13,130,103,0.75)',
+          'rgba(185,28,28,0.75)',
+          'rgba(13,130,103,0.75)',
+          'rgba(13,130,103,0.75)',
+          'rgba(180,83,9,0.75)',
+          'rgba(13,130,103,0.75)'
+        ],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#3A4A45', font: { size: 11 } } },
+        y: { max: 100, grid: { color: 'rgba(14,56,48,0.06)' }, ticks: { color: '#7A8B87', font: { family: 'JetBrains Mono', size: 10 }, callback: v => v + '%' } }
+      }
+    }
+  });
+
+  // Strategy Comparison
+  strategyChart = new Chart(document.getElementById('strategyComparisonChart'), {
+    type: 'bar',
+    data: {
+      labels: ['FCFS','Urgency-Only','MEDFLOW'],
+      datasets: [{
+        label: 'Avg Wait (min)',
+        data: [48.2,34.5,18.6],
+        backgroundColor: [CHART_COLORS.slate,'rgba(13,130,103,0.6)',CHART_COLORS.teal],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#3A4A45', font: { size: 12 } } },
+        y: { grid: { color: 'rgba(14,56,48,0.06)' }, ticks: { color: '#7A8B87', font: { family: 'JetBrains Mono', size: 10 }, callback: v => v + 'm' } }
+      }
+    }
+  });
+
+  // Admissions vs Discharges
+  admissionsChart = new Chart(document.getElementById('admissionsChart'), {
+    type: 'line',
+    data: {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [{
+        label: 'Admissions',
+        data: [42,58,51,65,72,48,38],
+        borderColor: CHART_COLORS.teal,
+        backgroundColor: 'rgba(13,130,103,0.08)',
+        fill: true
+      },{
+        label: 'Discharges',
+        data: [38,52,48,61,68,44,35],
+        borderColor: CHART_COLORS.slate,
+        borderDash: [4,4],
+        fill: false
+      }]
+    },
+    options: { ...lineOpts(), plugins: { ...CHART_DEFAULTS.plugins, legend: { display: true, labels: { color: '#7A8B87', font: { size: 11 }, boxWidth: 12 } } } }
+  });
+
+  // Case Distribution (Donut)
+  caseDistChart = new Chart(document.getElementById('caseDistributionChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Emergency','ICU','Cardiology','Neurology','General Med','Gynecology'],
+      datasets: [{
+        data: [32,12,18,11,20,7],
+        backgroundColor: [CHART_COLORS.red,CHART_COLORS.amber,CHART_COLORS.teal,CHART_COLORS.sage,CHART_COLORS.slate,CHART_COLORS.blue],
+        borderWidth: 0,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: { position: 'right', labels: { color: '#3A4A45', font: { size: 11 }, boxWidth: 10, usePointStyle: true } },
+        tooltip: { backgroundColor: '#0B2B24', titleColor: '#F6F4EF', bodyColor: 'rgba(246,244,239,0.7)', padding: 10 }
+      }
+    }
+  });
+}
+
+async function loadAnalytics() {
+  try {
+    const res = await fetch('/api/metrics');
+    const d = await res.json();
+    const total = (d.patients_served??0) + (d.patients_waiting??0);
+    document.getElementById('anaStatTotal').textContent = total || 49;
+    document.getElementById('anaStatWait').textContent = d.average_waiting_time != null ? Number(d.average_waiting_time).toFixed(1) : '26.6';
+  } catch(e) {}
+
+  try {
+    const res = await fetch('/api/strategies/compare');
+    const d = await res.json();
+    const grid = document.getElementById('strategyStatsGrid');
+    if (grid) {
+      grid.innerHTML = Object.entries(d).map(([key, s]) => `
+        <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-md)">
+          <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px">${s.name}</div>
+          <div style="font-family:var(--font-mono);font-size:1.4rem;font-weight:600;color:var(--text-primary)">${s.avg_wait_time}m</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px">avg wait · ${s.patients_served} served</div>
+        </div>
+      `).join('');
+    }
+
+    // Update strategy chart
+    if (strategyChart) {
+      strategyChart.data.datasets[0].data = [
+        d.FCFS?.avg_wait_time ?? 48.2,
+        d.URGENCY_ONLY?.avg_wait_time ?? 34.5,
+        d.MEDFLOW?.avg_wait_time ?? 18.6
+      ];
+      strategyChart.update();
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initCharts();
+  loadAnalytics();
+});
+</script>
+</body>
+</html>

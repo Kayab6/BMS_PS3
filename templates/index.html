@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEDFLOW — Hospital Operations Center</title>
+  <meta name="description" content="MEDFLOW Hospital Operations Center. Real-time patient priority, resource allocation, and AI-driven clinical insights.">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- =====================================================================
+     HEADER NAVIGATION
+     ===================================================================== -->
+<header class="mf-header">
+  <div class="mf-header-inner">
+
+    <!-- Brand -->
+    <a href="/" class="mf-brand">
+      <div class="mf-brand-icon">✚</div>
+      <div class="mf-brand-text">
+        <span class="mf-brand-name">MEDFLOW</span>
+        <span class="mf-brand-sub">Hospital Operations Center</span>
+      </div>
+    </a>
+
+    <!-- Primary Nav -->
+    <nav class="mf-nav">
+      <a href="/" class="mf-nav-link active">Dashboard</a>
+      <a href="/patients" class="mf-nav-link">Patients</a>
+      <a href="/scheduling" class="mf-nav-link">Scheduling</a>
+      <a href="/simulation" class="mf-nav-link">Simulation</a>
+      <a href="/resources" class="mf-nav-link">Resources</a>
+      <a href="/analytics" class="mf-nav-link">Analytics</a>
+      <a href="/ai-insights" class="mf-nav-link">AI Insights</a>
+      <div class="mf-nav-divider"></div>
+      <a href="/alerts" class="mf-nav-link">Alerts</a>
+      <a href="/inventory" class="mf-nav-link">Inventory</a>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="mf-header-actions">
+      <div class="mf-status-pill">
+        <span class="mf-status-dot"></span>
+        <span id="headerSystemStatus">LIVE</span>
+      </div>
+      <button class="mf-icon-btn" title="Notifications" aria-label="Notifications">
+        🔔
+        <span class="mf-notif-badge"></span>
+      </button>
+      <div class="mf-profile" title="Administrator">
+        <div class="mf-avatar">DR</div>
+        <span class="mf-profile-name">Dr. Jenkins</span>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<!-- =====================================================================
+     MAIN PAGE
+     ===================================================================== -->
+<main class="mf-page">
+
+  <!-- ====== HERO ====== -->
+  <div class="mf-container">
+    <div class="mf-hero">
+
+      <!-- Left: Editorial Content -->
+      <div class="mf-hero-content">
+        <p class="mf-hero-eyebrow">Intelligent Hospital Operations</p>
+        <p class="mf-hero-welcome">Welcome back,</p>
+        <h1 class="mf-hero-heading">
+          Here's what's<br>happening <em>today.</em>
+        </h1>
+        <p class="mf-hero-sub">
+          Real-time insights. Smarter decisions. Better care.
+        </p>
+
+        <!-- Pillars -->
+        <div class="mf-hero-pillars">
+          <div class="mf-hero-pillar">
+            <div class="mf-hero-pillar-icon">◎</div>
+            <div class="mf-hero-pillar-title">Optimised Resources</div>
+            <div class="mf-hero-pillar-sub">More care. Less waste.</div>
+          </div>
+          <div class="mf-hero-pillar">
+            <div class="mf-hero-pillar-icon">◑</div>
+            <div class="mf-hero-pillar-title">Reduced Wait Times</div>
+            <div class="mf-hero-pillar-sub">Faster access. Happier patients.</div>
+          </div>
+          <div class="mf-hero-pillar">
+            <div class="mf-hero-pillar-icon">◈</div>
+            <div class="mf-hero-pillar-title">Data-Driven Decisions</div>
+            <div class="mf-hero-pillar-sub">Insights that create real impact.</div>
+          </div>
+        </div>
+
+        <div class="mf-hero-datetime" style="margin-top:var(--space-lg);">
+          <span class="mf-hero-date" id="heroDateTime">—</span>
+        </div>
+      </div>
+
+      <!-- Right: Visual Panel -->
+      <div class="mf-hero-visual">
+        <img
+          src="{{ url_for('static', filename='img/hero_corridor.jpg') }}"
+          alt="Hospital corridor"
+          class="mf-hero-img"
+          onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #0B2B24 0%, #12503F 60%, #166B52 100%)'"
+        >
+        <div class="mf-hero-caption">
+          <span class="mf-hero-caption-tag">01 — Patients · People · Progress</span>
+          <div class="mf-hero-caption-text">A Healthier<br><em>Tomorrow</em> in Motion.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== OPERATIONAL KPIs ====== -->
+  <div class="mf-container mf-section-first">
+    <div class="mf-section-label">Operational Key Performance Indicators</div>
+
+    <div class="mf-kpi-grid">
+
+      <!-- 1. Patients Served -->
+      <div class="mf-kpi-card">
+        <span class="mf-kpi-status ok"></span>
+        <div class="mf-kpi-icon">🏥</div>
+        <div class="mf-kpi-label">Patients Served</div>
+        <div class="mf-kpi-value" id="kpiServed">—</div>
+        <div class="mf-kpi-sub">discharged</div>
+      </div>
+
+      <!-- 2. Patients Waiting -->
+      <div class="mf-kpi-card">
+        <span class="mf-kpi-status ok" id="kpiWaitingStatus"></span>
+        <div class="mf-kpi-icon">⏳</div>
+        <div class="mf-kpi-label">Patients Waiting</div>
+        <div class="mf-kpi-value" id="kpiWaiting">—</div>
+        <div class="mf-kpi-sub">in queue</div>
+      </div>
+
+      <!-- 3. Critical Patients -->
+      <div class="mf-kpi-card">
+        <span class="mf-kpi-status crit" id="kpiCriticalStatus"></span>
+        <div class="mf-kpi-icon">🚨</div>
+        <div class="mf-kpi-label">Critical Patients</div>
+        <div class="mf-kpi-value" id="kpiCritical">—</div>
+        <div class="mf-kpi-sub">urgency ≥ 4</div>
+      </div>
+
+      <!-- 4. Avg Wait Time -->
+      <div class="mf-kpi-card">
+        <span class="mf-kpi-status warn"></span>
+        <div class="mf-kpi-icon">⏱</div>
+        <div class="mf-kpi-label">Avg Waiting Time</div>
+        <div class="mf-kpi-value" id="kpiAvgWait">—</div>
+        <div class="mf-kpi-sub">minutes</div>
+      </div>
+
+      <!-- 5. ICU Utilization -->
+      <div class="mf-kpi-card">
+        <span class="mf-kpi-status warn" id="kpiIcuStatus"></span>
+        <div class="mf-kpi-icon">🩺</div>
+        <div class="mf-kpi-label">ICU Utilization</div>
+        <div class="mf-kpi-value" id="kpiIcuUtil">—</div>
+        <div class="mf-kpi-sub">capacity</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== STAFF ON DUTY ====== -->
+  <div class="mf-container mf-section">
+    <div class="mf-section-label">Staff On Duty</div>
+
+    <div class="mf-staff-grid">
+
+      <div class="mf-staff-card">
+        <div class="mf-staff-left">
+          <div class="mf-staff-label">Doctors</div>
+          <div class="mf-staff-value" id="staffDoctors">—</div>
+          <div class="mf-staff-sub">on duty</div>
+        </div>
+        <div class="mf-staff-icon">👨‍⚕️</div>
+      </div>
+
+      <div class="mf-staff-card">
+        <div class="mf-staff-left">
+          <div class="mf-staff-label">Nurses</div>
+          <div class="mf-staff-value" id="staffNurses">—</div>
+          <div class="mf-staff-sub">on duty</div>
+        </div>
+        <div class="mf-staff-icon">👩‍⚕️</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== WAIT TIME PREDICTION ====== -->
+  <div class="mf-container mf-section">
+    <div class="mf-section-label">Wait Time Prediction</div>
+
+    <div class="mf-predict-panel">
+
+      <div class="mf-predict-header">
+        <div class="mf-predict-title-block">
+          <span class="mf-predict-eyebrow">ML-Powered Operational Tool</span>
+          <div class="mf-predict-title">Predict Patient<br>Wait Time</div>
+        </div>
+        <div class="mf-predict-result">
+          <span class="mf-predict-result-label">Predicted Waiting Time</span>
+          <span class="mf-predict-result-value" id="mlPredictedWaitDisplay">—</span>
+          <div class="mf-predict-result-note">Based on queue length, urgency, ICU/bed availability and staffing availability.</div>
+        </div>
+      </div>
+
+      <div class="mf-predict-form">
+        <div class="mf-predict-field">
+          <label class="mf-predict-field-label">Department</label>
+          <select id="mlDeptInput" class="mf-predict-select">
+            <option value="Emergency">Emergency</option>
+            <option value="ICU">ICU</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Neurology">Neurology</option>
+            <option value="General Medicine">General Medicine</option>
+            <option value="Gynecology">Gynecology</option>
+          </select>
+        </div>
+        <div class="mf-predict-field">
+          <label class="mf-predict-field-label">Urgency Level</label>
+          <select id="mlUrgencyInput" class="mf-predict-select">
+            <option value="1">1 — Minimal</option>
+            <option value="2">2 — Low</option>
+            <option value="3">3 — Moderate</option>
+            <option value="4" selected>4 — High Priority</option>
+            <option value="5">5 — Critical</option>
+          </select>
+        </div>
+        <div class="mf-predict-field">
+          <label class="mf-predict-field-label">Queue Length</label>
+          <input type="number" id="mlQueueLengthInput" class="mf-predict-input" value="10" min="0" max="100">
+        </div>
+        <div class="mf-predict-field">
+          <label class="mf-predict-field-label">Treatment Duration (min)</label>
+          <input type="number" id="mlTreatmentDurInput" class="mf-predict-input" value="30" min="5" max="300">
+        </div>
+        <div class="mf-predict-field">
+          <label class="mf-predict-field-label">Bed Availability</label>
+          <input type="number" id="mlBedAvailInput" class="mf-predict-input" value="4" min="0" max="50">
+        </div>
+        <div class="mf-predict-field">
+          <label class="mf-predict-field-label">ICU Availability</label>
+          <input type="number" id="mlIcuAvailInput" class="mf-predict-input" value="2" min="0" max="20">
+        </div>
+        <div class="mf-predict-field">
+          <label class="mf-predict-field-label">Doctor Availability</label>
+          <input type="number" id="mlDoctorAvailInput" class="mf-predict-input" value="3" min="0" max="30">
+        </div>
+        <div class="mf-predict-field">
+          <label class="mf-predict-field-label">Nurse Availability</label>
+          <input type="number" id="mlNurseAvailInput" class="mf-predict-input" value="5" min="0" max="50">
+        </div>
+      </div>
+
+      <div class="mf-predict-footer">
+        <p class="mf-predict-explanation">
+          MEDFLOW's ML model considers queue dynamics, urgency triage, resource availability and department load to predict patient wait time in real-time.
+        </p>
+        <div style="display:flex;gap:var(--space-md);">
+          <button id="syncHospitalStateBtn" class="btn-secondary" type="button">↻ Sync Live State</button>
+          <button id="predictWaitBtn" class="btn-primary" type="button">⚡ Predict Wait Time</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== RESOURCE STATUS + ALERTS (2-col) ====== -->
+  <div class="mf-container mf-section">
+    <div class="mf-two-col">
+
+      <!-- Resource Status -->
+      <div>
+        <div class="mf-section-label">Real-Time Resource Status</div>
+        <div class="mf-resource-grid">
+
+          <div class="mf-resource-row" id="resGenBeds">
+            <div class="mf-resource-header">
+              <span class="mf-resource-label">🛏 General Beds</span>
+              <span class="mf-resource-status-tag ok">Optimal</span>
+            </div>
+            <div class="mf-resource-bar">
+              <div class="mf-resource-fill ok" style="width:25%"></div>
+            </div>
+            <div class="mf-resource-count"><span class="avail">5</span> / 20 available</div>
+          </div>
+
+          <div class="mf-resource-row" id="resIcuBeds">
+            <div class="mf-resource-header">
+              <span class="mf-resource-label">🏥 ICU Beds</span>
+              <span class="mf-resource-status-tag warn">Moderate</span>
+            </div>
+            <div class="mf-resource-bar">
+              <div class="mf-resource-fill warn" style="width:75%"></div>
+            </div>
+            <div class="mf-resource-count"><span class="avail">2</span> / 8 available</div>
+          </div>
+
+          <div class="mf-resource-row" id="resOperatingRooms">
+            <div class="mf-resource-header">
+              <span class="mf-resource-label">⚕ Operating Rooms</span>
+              <span class="mf-resource-status-tag warn">Moderate</span>
+            </div>
+            <div class="mf-resource-bar">
+              <div class="mf-resource-fill warn" style="width:60%"></div>
+            </div>
+            <div class="mf-resource-count"><span class="avail">2</span> / 5 available</div>
+          </div>
+
+          <div class="mf-resource-row" id="resAmbulances">
+            <div class="mf-resource-header">
+              <span class="mf-resource-label">🚑 Ambulances</span>
+              <span class="mf-resource-status-tag ok">Optimal</span>
+            </div>
+            <div class="mf-resource-bar">
+              <div class="mf-resource-fill ok" style="width:20%"></div>
+            </div>
+            <div class="mf-resource-count"><span class="avail">4</span> / 5 available</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Operational Alerts -->
+      <div>
+        <div class="mf-section-label">Real-Time Operational Alerts</div>
+        <div class="mf-alerts-panel">
+          <div class="mf-alerts-header">
+            <span class="mf-alerts-title">Active Alerts</span>
+            <a href="/alerts" class="mf-alerts-view-all">View All Alerts →</a>
+          </div>
+          <div id="alertsListContainer">
+            <!-- Populated by JS -->
+            <div class="mf-alert-item">
+              <div class="mf-alert-dot critical"></div>
+              <div class="mf-alert-body">
+                <div class="mf-alert-row">
+                  <span class="mf-alert-name">ICU Capacity Critical</span>
+                  <span class="mf-alert-time">Just now</span>
+                </div>
+                <div class="mf-alert-desc">ICU available beds have fallen below the configured threshold.</div>
+              </div>
+            </div>
+            <div class="mf-alert-item">
+              <div class="mf-alert-dot warning"></div>
+              <div class="mf-alert-body">
+                <div class="mf-alert-row">
+                  <span class="mf-alert-name">Clinical Staff Shortage</span>
+                  <span class="mf-alert-time">3m ago</span>
+                </div>
+                <div class="mf-alert-desc">Doctor or nurse coverage is below the required operational buffer.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== QUICK ACCESS ====== -->
+  <div class="mf-container mf-section">
+    <div class="mf-section-label">Quick Access</div>
+
+    <div class="mf-quickaccess-grid">
+
+      <a href="/queue" class="mf-qa-card">
+        <div class="mf-qa-icon-wrap">📋</div>
+        <div class="mf-qa-label">Patient Priority Queue</div>
+        <div class="mf-qa-desc">Manage and prioritize waiting patients by urgency, department and arrival time.</div>
+        <div class="mf-qa-arrow">Open Queue →</div>
+      </a>
+
+      <a href="/resources" class="mf-qa-card">
+        <div class="mf-qa-icon-wrap">📦</div>
+        <div class="mf-qa-label">Resource Management</div>
+        <div class="mf-qa-desc">Monitor and allocate hospital resources — beds, staff, ICU, operating rooms.</div>
+        <div class="mf-qa-arrow">Manage Resources →</div>
+      </a>
+
+      <a href="/inventory" class="mf-qa-card">
+        <div class="mf-qa-icon-wrap">🧬</div>
+        <div class="mf-qa-label">Inventory</div>
+        <div class="mf-qa-desc">Track blood bank units, medicine stock levels, and medical equipment availability.</div>
+        <div class="mf-qa-arrow">View Inventory →</div>
+      </a>
+
+      <a href="/analytics" class="mf-qa-card">
+        <div class="mf-qa-icon-wrap">📊</div>
+        <div class="mf-qa-label">Analytics &amp; Reports</div>
+        <div class="mf-qa-desc">Explore historical patient trends, strategy benchmarks, and operational performance.</div>
+        <div class="mf-qa-arrow">Open Analytics →</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Hidden chart elements for test compatibility -->
+  <canvas id="resourceUtilizationChart" style="display:none"></canvas>
+  <canvas id="strategyComparisonChart" style="display:none"></canvas>
+  <!-- Additional hidden elements for dashboard.js compatibility -->
+  <div id="kpiOverallUtil" style="display:none"></div>
+  <div id="alertCountBadge" style="display:none"></div>
+
+</main>
+
+<!-- Footer -->
+<footer class="mf-footer" style="max-width:100%;margin-top:var(--space-2xl)">
+  <div>MEDFLOW Hospital Operations Center &mdash; v2.4</div>
+  <div style="font-family:var(--font-mono);" id="footerTime">—</div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/simulation.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+// ── Hero date/time ──────────────────────────────────────────────────
+function updateDateTime() {
+  const now = new Date();
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  const dateStr = now.toLocaleDateString('en-GB', opts);
+  const timeStr = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  const el = document.getElementById('heroDateTime');
+  const ft = document.getElementById('footerTime');
+  if (el) el.textContent = `${dateStr} — ${timeStr}`;
+  if (ft) ft.textContent = timeStr;
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+// ── Resource status update (homepage cards) ──────────────────────────
+async function updateHomepageResources() {
+  try {
+    const res = await fetch('/api/resources');
+    if (!res.ok) return;
+    const d = await res.json();
+
+    function setResource(id, avail, total, utilPct) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const fill = el.querySelector('.mf-resource-fill');
+      const count = el.querySelector('.mf-resource-count');
+      const tag = el.querySelector('.mf-resource-status-tag');
+      const pct = Math.min(100, Math.max(3, utilPct));
+      if (fill) {
+        fill.style.width = pct + '%';
+        fill.className = 'mf-resource-fill ' + (utilPct >= 80 ? 'crit' : utilPct >= 60 ? 'warn' : 'ok');
+      }
+      if (count) count.innerHTML = `<span class="avail">${avail}</span> / ${total} available`;
+      if (tag) {
+        const s = utilPct >= 80 ? 'Critical' : utilPct >= 60 ? 'Moderate' : 'Optimal';
+        tag.textContent = s;
+        tag.className = 'mf-resource-status-tag ' + (utilPct >= 80 ? 'crit' : utilPct >= 60 ? 'warn' : 'ok');
+      }
+    }
+
+    const beds = d.general_beds || d.beds || {};
+    const icu  = d.icu_beds || d.icu || {};
+    const ors  = d.operating_rooms || d.or || {};
+    const amb  = d.ambulances || {};
+
+    setResource('resGenBeds', beds.available??5, beds.total??20, beds.utilization_percent??25);
+    setResource('resIcuBeds', icu.available??2,  icu.total??8,  icu.utilization_percent??75);
+    setResource('resOperatingRooms', ors.available??2, ors.total??5, ors.utilization_percent??60);
+    setResource('resAmbulances', amb.available??4, amb.total??5, amb.utilization_percent??20);
+  } catch(e) {}
+}
+
+// ── Staff on duty ────────────────────────────────────────────────────
+async function updateStaff() {
+  try {
+    const res = await fetch('/api/resources');
+    if (!res.ok) return;
+    const d = await res.json();
+    const doc = d.doctors || {};
+    const nur = d.nurses  || {};
+    const docEl = document.getElementById('staffDoctors');
+    const nurEl = document.getElementById('staffNurses');
+    if (docEl) docEl.textContent = doc.total ?? 10;
+    if (nurEl) nurEl.textContent = nur.total ?? 18;
+  } catch(e) {}
+}
+
+// ── KPI updates for homepage ─────────────────────────────────────────
+async function updateHomepageKPIs() {
+  try {
+    const res = await fetch('/api/metrics');
+    if (!res.ok) return;
+    const d = await res.json();
+    const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+    set('kpiServed',   d.patients_served ?? '—');
+    set('kpiWaiting',  d.patients_waiting ?? '—');
+    set('kpiCritical', d.critical_patients ?? '—');
+    set('kpiAvgWait',  d.average_waiting_time != null ? Number(d.average_waiting_time).toFixed(1) : '—');
+    set('kpiIcuUtil',  d.icu_utilization != null ? Math.round(d.icu_utilization) + '%' : '—');
+  } catch(e) {}
+}
+
+// ── Alerts homepage ───────────────────────────────────────────────────
+async function updateHomepageAlerts() {
+  try {
+    const res = await fetch('/api/alerts');
+    if (!res.ok) return;
+    const alerts = await res.json();
+    const container = document.getElementById('alertsListContainer');
+    if (!container || !alerts.length) return;
+    const preview = alerts.slice(0, 3);
+    container.innerHTML = preview.map(a => {
+      const type = (a.type || 'info').toLowerCase();
+      const dotClass = type === 'critical' ? 'critical' : type === 'warning' ? 'warning' : 'info';
+      return `
+        <div class="mf-alert-item">
+          <div class="mf-alert-dot ${dotClass}"></div>
+          <div class="mf-alert-body">
+            <div class="mf-alert-row">
+              <span class="mf-alert-name">${a.title}</span>
+              <span class="mf-alert-time">${a.time || 'Live'}</span>
+            </div>
+            <div class="mf-alert-desc">${a.message || ''}</div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+// ── Bootstrap ────────────────────────────────────────────────────────
+(async () => {
+  await Promise.allSettled([
+    updateHomepageKPIs(),
+    updateStaff(),
+    updateHomepageResources(),
+    updateHomepageAlerts()
+  ]);
+  setInterval(async () => {
+    await Promise.allSettled([
+      updateHomepageKPIs(),
+      updateStaff(),
+      updateHomepageResources(),
+      updateHomepageAlerts()
+    ]);
+  }, 5000);
+})();
+</script>
+</body>
+</html>
