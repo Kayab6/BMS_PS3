@@ -1,159 +1,181 @@
 # MEDFLOW
 
-MEDFLOW is a lightweight hospital operations simulation and demo backend built for a hackathon prototype. It combines a Flask API, SQLite database, queue scheduler, resource manager, simulation loop, ML waiting-time predictor, and a Hugging Face-powered operational explainer with a safe rule-based fallback.
+**MEDFLOW** is a lightweight hospital operations simulation platform built for hackathons and educational demonstrations.
 
-## Architecture
+It simulates patient flow through a hospital while considering **urgency, waiting time, department priority, staff availability, beds, ICU capacity, equipment, and inventory**. It combines a Flask backend, SQLite database, scheduling engine, resource manager, simulation engine, machine-learning wait-time predictor, and an AI-powered operational explanation layer.
 
-```text
-Frontend / dashboard
-   ↓
-Flask API
-   ↓
-Scheduler + Priority Engine
-   ↓
-Resource Manager
-   ↓
-Simulation Engine
-   ↓
-SQLite database
-   ↓
-Metrics / queue / patient state
-   ↓
-ML waiting-time prediction
-   ↓
-AI operational explanation
-   ↓
-Fallback explanation
-```
-
-## Install
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-## Initialize database
-
-The app initializes its SQLite tables and sample data automatically on first launch.
-
-```bash
-python app.py
-```
-
-## Run the Flask app
-
-```bash
-python app.py
-```
-
-Then open:
-
-```text
-http://127.0.0.1:5000
-```
-
-## Train the ML model
-
-```bash
-python ml/train.py
-```
-
-This creates:
-
-```text
-ml/dataset.csv
-ml/model.pkl
-ml/department_encoder.pkl
-```
-
-## Hugging Face configuration
-
-Create a `.env` file from `.env.example` and fill in your tokens if you want to use Hugging Face:
-
-```bash
-copy .env.example .env
-```
-
-Example:
-
-```env
-HF_TOKEN=
-HF_MODEL=
-```
-
-If the token is missing or the API fails, the app automatically falls back to a rule-based explanation so the dashboard keeps working.
-
-## API endpoints
-
-- `GET /api/health`
-- `GET /api/patients`
-- `GET /api/resources`
-- `GET /api/queue`
-- `GET /api/metrics`
-- `POST /api/simulation/start`
-- `GET /api/simulation/status`
-- `POST /api/ml/predict-wait`
-- `POST /api/ai/explain`
-
-## Example requests
-
-```bash
-curl http://127.0.0.1:5000/api/health
-curl http://127.0.0.1:5000/api/patients
-curl http://127.0.0.1:5000/api/metrics
-curl -X POST http://127.0.0.1:5000/api/ml/predict-wait -H "Content-Type: application/json" -d "{\"urgency\":4,\"queue_length\":10,\"icu_availability\":2,\"bed_availability\":4,\"doctor_availability\":3,\"nurse_availability\":5,\"treatment_duration\":30,\"department\":\"Emergency\"}"
-curl -X POST http://127.0.0.1:5000/api/ai/explain -H "Content-Type: application/json" -d "{\"waiting_patients\":18,\"average_waiting_time\":42,\"beds_available\":3,\"doctors_available\":2,\"nurses_available\":4,\"icu_available\":1,\"blood_units\":8,\"medicine_stock\":64,\"highest_queue_department\":\"Emergency\"}"
-```
-
-## Notes
-
-- The prototype intentionally keeps the logic readable and easy to demo.
-- The app avoids overengineering and reuses the existing scheduling, resource, and simulation modules rather than creating duplicate systems.
-- The AI layer is operational only: it explains queue pressure and resource bottlenecks without making clinical decisions.
-
-```text
-Priority =
-0.60 × Urgency
-+
-0.20 × Waiting Time
-+
-0.10 × Department
-+
-0.10 × Resource Feasibility
-```
-
-Weights are configurable.
+> **MEDFLOW is a hospital operations simulation system. It is not a clinical decision-support system and does not provide medical advice.**
 
 ---
 
-# Scheduling Strategies
+## What MEDFLOW Does
 
-### FCFS
+Hospitals constantly have to make operational decisions such as:
 
-Processes patients according to arrival time.
+* Which patient should be processed next?
+* How should limited beds and staff be allocated?
+* Where are the current bottlenecks?
+* How will an emergency surge affect waiting times?
+* What happens if doctors or nurses become unavailable?
+* What happens when blood, medicine, or equipment inventory becomes constrained?
+* How do different scheduling strategies affect patient flow?
 
-### Urgency Only
+MEDFLOW provides a simulated environment for exploring these questions.
 
-Processes patients based primarily on urgency.
+Instead of using a simple **First-Come, First-Served (FCFS)** queue, MEDFLOW uses a configurable priority score that considers multiple operational factors.
 
-### MEDFLOW
+```text
+Priority Score =
+    0.60 × Urgency
+  + 0.20 × Waiting Time
+  + 0.10 × Department Priority
+  + 0.10 × Resource Feasibility
+```
 
-Combines:
-
-* urgency
-* waiting time
-* department priority
-* resource feasibility
+The weights are configurable and can be adjusted for different simulation scenarios.
 
 ---
 
-# Inventory
+# Architecture
 
-MEDFLOW tracks:
+```text
+                    ┌─────────────────────┐
+                    │ Frontend / Dashboard │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │     Flask API       │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                 ┌───────────────────────────┐
+                 │ Scheduler + Priority      │
+                 │ Engine                    │
+                 └────────────┬──────────────┘
+                              │
+                              ▼
+                 ┌───────────────────────────┐
+                 │    Resource Manager       │
+                 └────────────┬──────────────┘
+                              │
+                              ▼
+                 ┌───────────────────────────┐
+                 │    Simulation Engine      │
+                 └────────────┬──────────────┘
+                              │
+                              ▼
+                 ┌───────────────────────────┐
+                 │      SQLite Database      │
+                 └────────────┬──────────────┘
+                              │
+                ┌─────────────┴──────────────┐
+                ▼                            ▼
+       ┌─────────────────┐          ┌─────────────────┐
+       │ ML Wait-Time    │          │ Metrics / Queue │
+       │ Predictor       │          │ / Patient State │
+       └────────┬────────┘          └─────────────────┘
+                │
+                ▼
+       ┌─────────────────────────┐
+       │ AI Operational          │
+       │ Explanation Layer       │
+       └────────────┬────────────┘
+                    │
+                    ▼
+       ┌─────────────────────────┐
+       │ Rule-Based Fallback     │
+       └─────────────────────────┘
+```
 
-### Blood
+The AI layer is intentionally separated from the scheduling and resource-management logic. It provides explanations of operational conditions rather than making clinical decisions.
+
+---
+
+# Core Features
+
+## 1. Patient Queue Management
+
+MEDFLOW maintains a simulated patient queue containing information such as:
+
+* Arrival time
+* Urgency
+* Department
+* Treatment duration
+* Current waiting time
+* Required resources
+* Patient status
+
+Patients are continuously processed by the simulation engine according to the selected scheduling strategy.
+
+---
+
+## 2. Scheduling Strategies
+
+MEDFLOW supports multiple strategies for comparison.
+
+### FCFS — First Come, First Served
+
+Patients are processed according to arrival order.
+
+```text
+Earlier arrival → Higher priority
+```
+
+### Urgency-Based Scheduling
+
+Patients are primarily prioritized according to urgency.
+
+```text
+Higher urgency → Higher priority
+```
+
+### MEDFLOW Strategy
+
+MEDFLOW combines multiple operational factors:
+
+* Patient urgency
+* Waiting time
+* Department priority
+* Resource feasibility
+
+This allows the simulation to demonstrate how a multi-factor scheduling strategy behaves under different hospital conditions.
+
+---
+
+# 3. Resource Management
+
+MEDFLOW tracks operational resources required during simulation.
+
+### Hospital Capacity
+
+* Beds
+* ICU beds
+* Doctors
+* Nurses
+
+### Equipment
+
+Examples include:
+
+* Scissors
+* Clamps
+* Forceps
+* Syringes
+* Patient monitors
+* Ventilators
+
+The resource manager considers availability when determining whether a patient can be processed.
+
+---
+
+# 4. Inventory Management
+
+MEDFLOW simulates hospital inventory.
+
+### Blood Inventory
+
+The system tracks the following blood groups:
 
 ```text
 A+
@@ -168,30 +190,68 @@ O-
 
 ### Medicines
 
-Tracks quantity and minimum stock threshold.
+The system tracks:
+
+* Current quantity
+* Minimum stock threshold
+* Stock availability
+* Potential shortages
 
 ### Equipment
 
-Tracks reusable and consumable medical equipment.
+Equipment can be represented as reusable or consumable resources depending on the simulation configuration.
 
-Examples:
-
-```text
-Scissors
-Clamps
-Forceps
-Syringes
-Monitors
-Ventilators
-```
+Inventory constraints can be introduced during scenarios to demonstrate their effect on hospital operations.
 
 ---
 
-# Machine Learning
+# 5. Hospital Simulation
 
-The simulator generates synthetic operational data.
+The simulation engine models changing hospital conditions over time.
 
-Features include:
+MEDFLOW supports several scenarios.
+
+### Normal Operation
+
+Represents a relatively stable patient arrival pattern and resource availability.
+
+### Emergency Surge
+
+Simulates a sudden increase in patient arrivals.
+
+This can create:
+
+```text
+More arrivals
+      ↓
+Longer queues
+      ↓
+Higher resource utilization
+      ↓
+Increased waiting times
+```
+
+### Staff Shortage
+
+Reduces the availability of doctors and/or nurses.
+
+### Resource Failure
+
+Temporarily removes a resource from service.
+
+### Inventory Shortage
+
+Reduces the availability of medicines, blood, or equipment.
+
+These scenarios allow the same scheduling system to be tested under different operational conditions.
+
+---
+
+# 6. Machine Learning Wait-Time Prediction
+
+MEDFLOW includes a machine-learning component for estimating patient waiting time.
+
+The simulator can generate synthetic operational data using features such as:
 
 ```text
 urgency
@@ -205,21 +265,41 @@ treatment duration
 arrival hour
 ```
 
-The ML model predicts:
+The model predicts:
 
 ```text
-patient waiting time
+Estimated Patient Waiting Time
 ```
 
-The initial model is a Random Forest Regressor.
+The initial implementation uses a **Random Forest Regressor**.
+
+## Training
+
+Run:
+
+```bash
+python ml/train.py
+```
+
+This generates the model artifacts used by the application:
+
+```text
+ml/dataset.csv
+ml/model.pkl
+ml/department_encoder.pkl
+```
+
+### Important
+
+The training data is **synthetically generated for simulation purposes**. The model should therefore be interpreted as a demonstration of operational prediction rather than a validated real-world hospital forecasting model.
 
 ---
 
-# Hugging Face AI
+# 7. AI Operational Explanation
 
-MEDFLOW uses Hugging Face as an operational explanation layer.
+MEDFLOW includes a Hugging Face-powered explanation layer.
 
-The model receives aggregated metrics such as:
+The AI receives aggregated operational information such as:
 
 ```json
 {
@@ -232,60 +312,189 @@ The model receives aggregated metrics such as:
 }
 ```
 
-It generates an operational summary.
+It generates a concise operational explanation describing factors such as:
 
-The AI does not:
+* Queue pressure
+* Resource bottlenecks
+* ICU utilization
+* Inventory shortages
+* Waiting-time trends
+
+### Safety Boundary
+
+The AI layer does **not**:
 
 * Diagnose patients
-* Select medical treatments
+* Recommend treatments
+* Select medications
 * Override resource constraints
 * Make clinical decisions
+* Replace medical professionals
+
+If Hugging Face is unavailable or no token is configured, MEDFLOW uses a **rule-based fallback** so the operational dashboard can continue functioning.
 
 ---
 
-# Scenarios
+# API
 
-MEDFLOW supports:
+The Flask backend exposes the following endpoints:
 
-### Normal Operation
+| Method | Endpoint                 | Purpose                             |
+| ------ | ------------------------ | ----------------------------------- |
+| GET    | `/api/health`            | Check application health            |
+| GET    | `/api/patients`          | Retrieve simulated patients         |
+| GET    | `/api/resources`         | Retrieve resource availability      |
+| GET    | `/api/queue`             | Retrieve current queue              |
+| GET    | `/api/metrics`           | Retrieve operational metrics        |
+| POST   | `/api/simulation/start`  | Start the simulation                |
+| GET    | `/api/simulation/status` | Retrieve simulation status          |
+| POST   | `/api/ml/predict-wait`   | Predict patient waiting time        |
+| POST   | `/api/ai/explain`        | Generate an operational explanation |
 
-Standard patient arrival pattern.
+### Example Requests
 
-### Emergency Surge
+Check application health:
 
-Sudden increase in patient arrivals.
+```bash
+curl http://127.0.0.1:5000/api/health
+```
 
-### Staff Shortage
+Retrieve patients:
 
-Reduced doctor/nurse availability.
+```bash
+curl http://127.0.0.1:5000/api/patients
+```
 
-### Resource Failure
+Retrieve metrics:
 
-A resource becomes unavailable.
+```bash
+curl http://127.0.0.1:5000/api/metrics
+```
 
-### Inventory Shortage
+Predict waiting time:
 
-Medicine, blood or equipment availability decreases.
+```bash
+curl -X POST http://127.0.0.1:5000/api/ml/predict-wait ^
+  -H "Content-Type: application/json" ^
+  -d "{\"urgency\":4,\"queue_length\":10,\"icu_availability\":2,\"bed_availability\":4,\"doctor_availability\":3,\"nurse_availability\":5,\"treatment_duration\":30,\"department\":\"Emergency\"}"
+```
+
+Generate an operational explanation:
+
+```bash
+curl -X POST http://127.0.0.1:5000/api/ai/explain ^
+  -H "Content-Type: application/json" ^
+  -d "{\"waiting_patients\":18,\"average_waiting_time\":42,\"beds_available\":3,\"doctors_available\":2,\"nurses_available\":4,\"icu_available\":1,\"blood_units\":8,\"medicine_stock\":64,\"highest_queue_department\":\"Emergency\"}"
+```
+
+> On Linux/macOS, replace the `^` line-continuation characters with `\`, or place the command on a single line.
+
+---
+
+# Installation
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/Kayab6/BMS_PS3_MedFlow.git
+cd BMS_PS3_MedFlow
+```
+
+## 2. Create a Virtual Environment
+
+### Windows
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### Linux/macOS
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+## 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# Configuration
+
+MEDFLOW can optionally use Hugging Face for AI-generated operational explanations.
+
+Create a `.env` file from the provided example:
+
+### Windows
+
+```bash
+copy .env.example .env
+```
+
+### Linux/macOS
+
+```bash
+cp .env.example .env
+```
+
+Then configure:
+
+```env
+HF_TOKEN=your_token_here
+HF_MODEL=your_model_here
+```
+
+The Hugging Face integration is optional.
+
+If the token is missing or the external API is unavailable, MEDFLOW automatically uses its rule-based fallback.
+
+**Do not commit `.env` or API tokens to GitHub.**
+
+---
+
+# Running MEDFLOW
+
+The database is initialized automatically when the application starts.
+
+Run:
+
+```bash
+python app.py
+```
+
+Then open:
+
+```text
+http://127.0.0.1:5000
+```
 
 ---
 
 # Dashboard
 
-The dashboard displays:
+The dashboard provides a real-time view of the simulated hospital environment.
+
+It can display:
 
 * Patients served
 * Patients waiting
 * Critical patients
 * Average waiting time
 * ICU utilization
-* Overall utilization
-* Resource availability
-* Inventory
+* Overall resource utilization
+* Bed availability
+* Staff availability
+* Inventory levels
 * Alerts
-* Queue
-* Strategy comparison
-* ML prediction
-* AI operational insight
+* Current queue
+* Scheduling strategy comparison
+* ML waiting-time prediction
+* AI-generated operational insights
 
 ---
 
@@ -293,85 +502,121 @@ The dashboard displays:
 
 ```text
 MEDFLOW/
+│
 ├── app.py
-├── backend/
-├── scheduling/
-├── simulation/
-├── optimization/
-├── resources/
-├── ml/
-├── ai/
-├── metrics/
-├── templates/
-├── static/
-├── tests/
 ├── requirements.txt
+├── README.md
 ├── PRD.md
-└── IMPLEMENTATION.md
+├── IMPLEMENTATION.md
+│
+├── backend/
+│   └── ...
+│
+├── scheduling/
+│   └── ...
+│
+├── simulation/
+│   └── ...
+│
+├── optimization/
+│   └── ...
+│
+├── resources/
+│   └── ...
+│
+├── ml/
+│   ├── train.py
+│   ├── dataset.csv
+│   ├── model.pkl
+│   └── department_encoder.pkl
+│
+├── ai/
+│   └── ...
+│
+├── metrics/
+│   └── ...
+│
+├── templates/
+│   └── ...
+│
+├── static/
+│   └── ...
+│
+└── tests/
+    └── ...
 ```
 
 ---
 
-# Team Workflow
+# Example Simulation Flow
 
-Each member works on a separate branch.
-
-```bash
-git checkout -b feature/<name>
-```
-
-Commit frequently:
-
-```bash
-git add .
-git commit -m "Implement <feature>"
-git push
-```
-
-Create a Pull Request into `main`.
-
----
-
-# Disclaimer
-
-MEDFLOW is a simulated hospital operations system created for educational and hackathon purposes.
-
-It does not provide clinical advice or real-world medical decision-making.
-
----
-
-# Hackathon Demo
-
-The recommended demonstration:
+A typical simulation can be demonstrated as:
 
 ```text
-1. Start simulation
-
-2. Show patient arrivals
-
-3. Show priority queue
-
-4. Show resource allocation
-
-5. Trigger emergency surge
-
-6. Show ICU bottleneck
-
-7. Show medicine/blood shortage
-
-8. Compare scheduling strategies
-
-9. Show ML waiting-time prediction
-
-10. Show Hugging Face operational insight
-
-11. Show final dashboard metrics
+Patient Arrivals
+       ↓
+Patient Queue
+       ↓
+Priority Calculation
+       ↓
+Resource Availability Check
+       ↓
+Patient Allocation
+       ↓
+Treatment Simulation
+       ↓
+Resource Release
+       ↓
+Metrics Update
+       ↓
+ML Waiting-Time Prediction
+       ↓
+AI Operational Explanation
 ```
 
-The central idea:
+---
 
-> MEDFLOW does not simply ask "Who is next?"
+# Recommended Hackathon Demo
 
-It asks:
+The application is designed to be demonstrated as a progression rather than as a collection of disconnected features.
 
-> "Who should be prioritized while respecting urgency, waiting time, department policy, available capacity, staff, equipment and inventory?"
+### 1. Start the Simulation
+
+Show the initial hospital state.
+
+### 2. Show Patient Arrivals
+
+Demonstrate patients entering different departmental queues.
+
+### 3. Show the Priority Queue
+
+Explain how MEDFLOW considers urgency, waiting time, department priority, and resource feasibility.
+
+### 4. Show Resource Allocation
+
+Demonstrate beds, ICU capacity, doctors, nurses, and equipment being allocated and released.
+
+### 5. Trigger an Emergency Surge
+
+Increase patient arrivals and show how queue pressure changes.
+
+### 6. Create an ICU Bottleneck
+
+Reduce ICU availability and demonstrate its effect on patient flow.
+
+### 7. Introduce an Inventory Shortage
+
+Reduce medicine or blood availability and show the resulting operational constraint.
+
+### 8. Compare Scheduling Strategies
+
+Compare:
+
+```text
+FCFS
+vs.
+Urgency-Based
+vs.
+MEDFLOW
+``
+```
